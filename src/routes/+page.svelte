@@ -1,10 +1,12 @@
 <script>
-  const api_url = 'sites.saveforest.cloud/api';
+  const api_url = '/data';
 
-    const GetData = ()=>{
-    fetch(`${api_url}/get_data`, {
+    const GetData = async () => {
+        const response = await fetch(`${api_url}`, {
         method : 'GET',
-      });
+          });
+        const data = await response.json();
+        console.log(data);
     }
   
 </script>
@@ -12,4 +14,4 @@
 <h1>Welcome to SvelteKitosss</h1>
 <p>{api_url}</p>
 <p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
-<button onclick="GetData()">get</button>
+<button on:click={GetData}>get</button>
