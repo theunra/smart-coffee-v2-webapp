@@ -54,8 +54,9 @@
       }
     
     let ctx;
-    let canvas;
+    let ctx1;
     let chart;
+    let chart1;
     let lineMarker;
 
     let f = 2;
@@ -71,6 +72,8 @@
         chart.config.plugins[0] = lineMarker;
         
         console.log(chart.config.plugins);
+
+        console.log(chart.data.datasets);
         
         chart.update();
       }
@@ -110,14 +113,38 @@
               },
             plugins: [lineMarker],
           });
+
+        chart1 = new Chart(ctx1, {
+            type: 'line',
+            data : {
+                labels : labels,
+                datasets: [
+                      {            
+                        label : 'mq135',
+                        tension : 0.3,
+                        data : data,
+                      },
+                  ]
+              },
+           // plugins: [lineMarker],
+          });
+ 
         GetData();
       });
+
+    const onClickStartSetup = () => {
+        const infocard = document.getElementById("info-card");
+        const setupcard = document.getElementById("setup-card");
+        infocard.hidden = false;
+        setupcard.hidden = true;
+      }
 </script>
 
 <div class="container-fluid row text-center p-3 rounded-4 main-back min-vh-100">
   <div class="col-1">
     <div class="row">
-      <img class="img-fluid logo-img rounded-start" src="/smartcoffeelogo.png"/>
+      <!--<img class="img-fluid logo-img rounded-start" src="/smartcoffeelogo.png"/>-->
+      <div class="col">logo</div>
     </div>
     <div class="row">
       <div class="col fs-6 rounded-start mt-1 pt-2 pb-2 main-container">Dashboard</div>
@@ -128,10 +155,6 @@
     <div class="col text-start">
       <div class="fw-bold fs-3">Dashboard Monitoring</div>
       <div class="fs-5">Smart Coffee Roaster Realtime Monitoring System</div>
-    </div>
-    <div class="col">
-    </div>
-    <div class="col">
     </div>
   </div>
   <div class="row content-container me-3 rounded-4">
@@ -145,10 +168,17 @@
     <div class="row p-4">
       <div class="col">
         <div class="row">
-          <div width=400 height=200>
+          <div class="row" width=400 height=200>
             <canvas id="mychart" bind:this={ctx} width={700} height={200}></canvas>
-          </div>
-          <div class="row p-2">
+          </div>          
+          <div class="row" width=400 height=200>
+            <canvas id="mychart1" bind:this={ctx1} width={700} height={200}></canvas>
+          </div> 
+ 
+         <div class="row p-2">
+            <div class="col fw-bold p-2 m-2 rounded-3 lamp-off">
+              PREHEAT
+            </div>
             <div class="col fw-bold p-2 m-2 rounded-3 lamp-charge">
               CHARGE
             </div>
@@ -156,15 +186,70 @@
               LIGHT
             </div>
             <div class="col fw-bold p-2 m-2 rounded-3 lamp-off">
-             MEDIUM
+              MEDIUM
             </div>
             <div class="col fw-bold p-2 m-2 rounded-3 lamp-off">
-            DARK
+              DARK
+            </div>
+          </div>          
+       </div>
+      </div>
+      <div id="setup-card" class="col-4">
+        <div class="row content-container rounded-4 p-4">
+          <div class="row">
+            <div class="fw-bold mb-4">Start a new Roasting</div>
+            <div class="row mb-2">
+              <div class="col">Bean Type</div>
+              <div class="col">
+                <select name="bean-type" id="bean-type">
+                  <option value="arabica">Arabica</option>
+                  <option value="robusta">Robusta</option>
+                </select>
+              </div>
+            </div>
+            <div class="row mb-2">
+              <div class="col">Roast Level</div>
+              <div class="col">
+                <select name="roast-level" id="roast-level">
+                  <option value="light">Light</option>
+                  <option value="medium">Medium</option>
+                  <option value="dark">Dark</option>
+                </select>
+              </div>
+            </div> 
+            <div class="row">
+              <div class="col"></div>
+              <div class="col fs-5 fw-bold mt-4 card-button" on:click={onClickStartSetup}>START</div>
+              <div class="col"></div>
             </div>
           </div>
         </div>
       </div>
-      <div class="col-4">
+      <div id="info-card" class="col-4" hidden>
+        <div class="row content-container rounded-4 p-4">
+          <div class="row">
+            <div class="fw-bold">Roast Info</div>
+            <div class="row">
+              <div class="col">Bean Type</div>
+              <div class="col">Arabica</div>
+            </div>
+            <div class="row">
+              <div class="col">Roast Level</div>
+              <div class="col">Light</div>
+            </div>
+            <div class="row">
+              <div class="col">Time Elapsed</div>
+              <div class="col">00:12:42</div>
+            </div>
+          </div>
+        </div>        
+        <div class="row content-container rounded-4 p-4 mt-3">
+          <div class="col">
+            <div class="row">
+              <div class="fw-bold">Other Info</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -219,6 +304,18 @@
     background: rgb(112,112,112);
     background: linear-gradient(90deg, rgba(112,112,112,1) 0%, rgba(159,159,159,0.880529579996061) 23%, rgba(142,142,142,0.8721262186515231) 83%, rgba(131,131,131,1) 100%);
 
+  }
+
+  .card-button {
+    color: white;
+    background: green;
+    border-radius: 20px;
+  }
+
+  .card-button:hover{
+    color: black;
+    background: greenyellow;
+    cursor: pointer;
   }
 
 </style>
