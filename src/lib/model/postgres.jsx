@@ -234,4 +234,5 @@ export const EnosePPMData = sequelize.define("enose_ppm_datas", {
 });
 
 
+
 sequelize.sync();

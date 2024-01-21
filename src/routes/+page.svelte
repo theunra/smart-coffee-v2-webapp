@@ -6,6 +6,7 @@
     let labels = ['a', 'b', 'c', 'd'];
     let x = 3;
     let lightIdx = 0;
+    let isDeviceActive = false;
 
     const api_url = '/data';
     const GetData = async () => {
@@ -52,7 +53,40 @@
         const status = await response.json();
         console.log(status);
       }
+
+    const url_device_api = "/device";
     
+    const GetIsDeviceActive = async () => {
+        const response = await fetch(`${url_device_api}?` + new URLSearchParams({
+            param : "isDeviceActive",
+          }), {
+            method: 'GET',
+            });       
+        
+        const resp_data = await response.json();
+
+        isDeviceActive = resp_data.payload.isDeviceActive;
+
+        console.log("device active : ", isDeviceActive);
+        setTimeout(()=>{
+            GetIsDeviceActive();
+          }, 100);
+      }
+    
+    const SendStartRoast = async () => {
+        const response = await fetch(`${url_device_api}`, {
+            method: 'POST',
+            headers: {
+                'Accept' : 'application/json',
+                'Content-Type' : 'application/json',
+              },
+            body: JSON.stringify({param : "start-roast"}),
+          });
+        const status = await response.json();
+        console.log(status);
+      }
+
+
     let ctx;
     let ctx1;
     let chart;
@@ -130,9 +164,15 @@
           });
  
         GetData();
+        GetIsDeviceActive();
       });
 
-    const onClickStartSetup = () => {
+    const onClickStartSetup = async () => {
+        if(!isDeviceActive) {
+            console.log("device is offline");
+            return;
+          }
+        await SendStartRoast();
         const infocard = document.getElementById("info-card");
         const setupcard = document.getElementById("setup-card");
         infocard.hidden = false;
@@ -224,6 +264,18 @@
             </div>
           </div>
         </div>
+        <div class="row content-container rounded-4 p-4 mt-3">
+          <div class="col">
+            <div class="row">
+              <div class="fw-bold">Other Info</div>
+              <div class="row">
+                <div class="col">Device Active</div>
+                <div class="col">{isDeviceActive}</div>
+            </div>
+            </div>
+          </div>
+        </div>
+ 
       </div>
       <div id="info-card" class="col-4" hidden>
         <div class="row content-container rounded-4 p-4">
@@ -247,6 +299,10 @@
           <div class="col">
             <div class="row">
               <div class="fw-bold">Other Info</div>
+              <div class="row">
+                <div class="col">Device Active</div>
+                <div class="col">{isDeviceActive}</div>
+            </div>
             </div>
           </div>
         </div>
