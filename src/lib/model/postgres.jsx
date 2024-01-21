@@ -24,6 +24,14 @@ catch (err){
 */
 
 export const EnoseRawData = sequelize.define("enose_raw_datas", {
+  roastId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },  
+  roastStatus: {
+    type: DataTypes.INTEGER, // 0 ... -> preheat , charge , light , medium , dark , drop , cool
+    allowNull: false,
+  },
   adc_mq135: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -71,6 +79,14 @@ export const EnoseRawData = sequelize.define("enose_raw_datas", {
 });
 
 export const EnosePPMData = sequelize.define("enose_ppm_datas", {
+   roastId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  roastStatus: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
       mq135_co : {
                 type: DataTypes.DOUBLE,
                 allowNull: false,
@@ -231,8 +247,36 @@ export const EnosePPMData = sequelize.define("enose_ppm_datas", {
                 type: DataTypes.DOUBLE,
                 allowNull: false,
             },
+  time: {
+    type: DataTypes.DATE,
+    allowNull: false,
+  },
 });
 
 
 
-sequelize.sync();
+export const Roast = sequelize.define("roasts", {
+  id : {
+    type : DataTypes.INTEGER,
+    allowNull : false,
+    primaryKey : true,
+  },
+  beanType : {
+    type : DataTypes.INTEGER, // 0 ... -> arabica , robusta
+    allowNull : false, 
+  },
+  level: {
+    type: DataTypes.INTEGER, // 0 ... -> light , medium , dark
+    allowNull: false,
+  },
+  startTime: {
+    type: DataTypes.DATE,
+    allowNull: false,
+  },   
+  endTime: {
+    type: DataTypes.DATE,
+    allowNull: false,
+  },
+});
+
+sequelize.sync({alter: true});

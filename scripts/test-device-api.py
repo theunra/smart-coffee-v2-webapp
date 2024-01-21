@@ -44,13 +44,17 @@ isRun = True
 
 isSendData = False
 
-def sendDataRoutine():     
+def sendDataRoutine():
+    adc = 20500
+
     while(isRun):
         payload = {
 		    "method" : "single",
 	        "raw_datas" :{
+                "roastId" : 0,
+                "roastStatus" : 2,
     	        "time" : datetime.utcnow().isoformat(),
-    	        "adc_mq135" : randint(0, 50),
+    	        "adc_mq135" : adc,
     	        "adc_mq136" : 3,
     	        "adc_mq137" : 13,
     	         "adc_mq138" : 23,
@@ -66,8 +70,10 @@ def sendDataRoutine():
         if(isSendData):
             print("send")
             sendSensorData(payload)
+
+            adc = adc + randint(0, 200)
         
-        time.sleep(2)
+        time.sleep(0.6)
 
 connect()
 

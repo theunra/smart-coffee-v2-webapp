@@ -19,7 +19,7 @@ export async function GET({ url }) {
     await new Promise(r => setTimeout(r, 100));
   
   const enoseRawDatas = await EnoseRawData.findAll({
-    limit : 10,
+//    limit : 100,
     order : [["time", "desc"]],
   });
   const enosePpmDatas = await EnosePPMData.findAll();

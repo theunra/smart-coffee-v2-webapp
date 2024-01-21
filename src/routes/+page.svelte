@@ -2,10 +2,26 @@
   import {onMount} from 'svelte';
     import Chart from 'chart.js/auto';
     
-    let data = [20, 10, 30, 40];
-    let labels = ['a', 'b', 'c', 'd'];
+    let raw_datas = {
+        adc_mq135 : [],
+        roastStatus : [],
+      };
+
+    let ppm_datas = {
+        mq135_co : [],
+      };
+
+    let labels = [];
+
+    for(let i = 0; i < 1000; i++){
+        labels.push(i);
+      }
+
+    let currentRoastStatus = -1;
+
     let x = 3;
-    let lightIdx = 0;
+    let chargeIdx = -1;
+    let lightIdx = -1;
     let isDeviceActive = false;
 
     const api_url = '/data';
@@ -29,13 +45,34 @@
                 console.log(response);
               }
           }
+
         const datas = await response.json();
         console.log(datas);
-        let vals = datas.payload.enose_raw_datas.map((d) => d.adc_mq135);
-        let ts = datas.payload.enose_raw_datas.map((d) => d.time.split("T")[1]);
+        raw_datas.adc_mq135 = datas.payload.enose_raw_datas.map((d) => d.adc_mq135);
+        raw_datas.roastStatus = datas.payload.enose_raw_datas.map((d) => d.roastStatus);
+        currentRoastStatus = raw_datas.roastStatus[raw_datas.roastStatus.length - 1];
+        
+        chargeIdx = -1;
+        lightIdx = -1;
 
-        data = vals;
-        labels = ts;
+        for(let k = 0; k < raw_datas.roastStatus.length; k++){
+            if(raw_datas.roastStatus[k] == 1) {//first light found
+                chargeIdx = k;
+                break;
+              }
+          }
+
+        for(let k = chargeIdx; k < raw_datas.roastStatus.length; k++){
+            if(raw_datas.roastStatus[k] == 2) {//first light found
+                lightIdx = k;
+                break;
+              }
+          }
+        
+        //let ts = datas.payload.enose_raw_datas.map((d) => d.time.split("T")[1]);
+
+        //labels = ts;
+        
         x = datas.tracker;
 
         await GetData();
@@ -92,18 +129,64 @@
     let chart;
     let chart1;
     let lineMarker;
+    let chargeLineMarker;
 
     let f = 2;
+    
+    let lastLampId = "";
+
+    $: {
+        let lampId = "";
+
+        switch(currentRoastStatus){
+            case 0:
+              lampId = "preheat";
+              break;
+            case 1:
+              lampId = "charge";
+              break;
+            case 2:
+              lampId = "light";
+              break;
+            case 3:
+              lampId = "medium";
+              break;
+            case 4:
+              lampId = "dark";
+              break;
+            default:
+              break;
+          }
+        
+        if(lampId != ""){
+            const lamp = document.getElementById("lamp-" + lampId);
+            console.log(lamp.className);
+            lamp.className = lamp.className.replace("lamp-off", "");
+
+            if(lastLampId != ""){
+                const lastLamp = document.getElementById("lamp-" + lastLampId);
+                console.log(lastLamp.className);
+                lastLamp.className = lastLamp.className + " lamp-off";
+                console.log(lastLamp.className);
+              }
+            lastLampId = lampId;
+          }
+      }
 
     $: if (chart) {
         console.log("x is changed");
-        chart.data.datasets[0].data = data;
+        chart.data.datasets[0].data = raw_datas.adc_mq135;
         chart.data.labels = labels;
         
         lineMarker.linePos = lightIdx;
-        if(lightIdx % 2 == 0) lineMarker.isShow = false;
+        if(lightIdx == -1) lineMarker.isShow = false;
         else lineMarker.isShow = true;
         chart.config.plugins[0] = lineMarker;
+        
+        chargeLineMarker.linePos = chargeIdx;
+        if(chargeIdx == -1) chargeLineMarker.isShow = false;
+        else chargeLineMarker.isShow = true;
+        chart.config.plugins[1] = chargeLineMarker;
         
         console.log(chart.config.plugins);
 
@@ -111,10 +194,11 @@
         
         chart.update();
       }
+
         lineMarker = {
             id: 'lineMarker',
-            linePos: 0,
-            isShow: true,
+            linePos: -1,
+            isShow: false,
             beforeDatasetsDraw: (chart, args, plugins) => {
                 const {ctx, chartArea : {top, bottom}, scales: { x }} = chart;
                
@@ -122,14 +206,34 @@
 
                 if(!lineMarker.isShow) return;
                 ctx.beginPath();
-                ctx.strokeStyle = 'blue';
+                ctx.strokeStyle = 'orange';
                 ctx.lineWidth = 3;
                 ctx.moveTo(x.getPixelForValue(lineMarker.linePos), top);
                 ctx.lineTo(x.getPixelForValue(lineMarker.linePos), bottom);
                 ctx.stroke();
 
               },
-          }
+          };
+
+        chargeLineMarker = {
+            id: 'chargeLineMarker',
+            linePos: -1,
+            isShow: false,
+            beforeDatasetsDraw: (chart, args, plugins) => {
+                const {ctx, chartArea : {top, bottom}, scales: { x }} = chart;
+               
+                ctx.save();
+
+                if(!chargeLineMarker.isShow) return;
+                ctx.beginPath();
+                ctx.strokeStyle = 'green';
+                ctx.lineWidth = 3;
+                ctx.moveTo(x.getPixelForValue(chargeLineMarker.linePos), top);
+                ctx.lineTo(x.getPixelForValue(chargeLineMarker.linePos), bottom);
+                ctx.stroke();
+
+              },
+          };
 
 
     onMount(async () => {
@@ -141,16 +245,27 @@
                       {            
                         label : 'mq135',
                         tension : 0.3,
-                        data : data,
+                        data : raw_datas.adc_mq135,
                       },
                   ]
               },
-            plugins: [lineMarker],
+            plugins: [lineMarker, chargeLineMarker],
             options:{
               animation: {
                   duration: 0,
-                }
-              }
+                },
+                elements: {
+                    point: {
+                        radius : 0,
+                      },
+                  },
+                scale : {
+                    y : {
+                        max : 40000,
+                        min : 0,
+                      }
+                  }
+              },
           });
 
         chart1 = new Chart(ctx1, {
@@ -159,9 +274,9 @@
                 labels : labels,
                 datasets: [
                       {            
-                        label : 'mq135',
+                        label : 'mq135 co',
                         tension : 0.3,
-                        data : data,
+                        data : ppm_datas.mq135_co,
                       },
                   ]
               },
@@ -221,19 +336,19 @@
           </div> 
  
          <div class="row p-2">
-            <div class="col fw-bold p-2 m-2 rounded-3 lamp-off">
+            <div id="lamp-preheat" class="col fw-bold p-2 m-2 rounded-3 lamp-preheat lamp-off">
               PREHEAT
             </div>
-            <div class="col fw-bold p-2 m-2 rounded-3 lamp-charge">
+            <div id="lamp-charge" class="col fw-bold p-2 m-2 rounded-3 lamp-charge lamp-off">
               CHARGE
             </div>
-            <div class="col fw-bold p-2 m-2 rounded-3 lamp-off">
+            <div id="lamp-light" class="col fw-bold p-2 m-2 rounded-3 lamp-light lamp-off">
               LIGHT
             </div>
-            <div class="col fw-bold p-2 m-2 rounded-3 lamp-off">
+            <div id="lamp-medium" class="col fw-bold p-2 m-2 rounded-3 lamp-medium lamp-off">
               MEDIUM
             </div>
-            <div class="col fw-bold p-2 m-2 rounded-3 lamp-off">
+            <div id="lamp-dark" class="col fw-bold p-2 m-2 rounded-3 lamp-dark lamp-off">
               DARK
             </div>
           </div>          
@@ -317,7 +432,14 @@
 </div>
 </div>
 
-<!--<button on:click={()=>{lightIdx = lightIdx + 1;}}>p</button>-->
+<!--
+<button on:click={()=>{
+        currentRoastStatus = currentRoastStatus + 1;
+        if(currentRoastStatus > 4) currentRoastStatus = 0;
+        }}>
+        p
+</button>
+-->
 <style>
   /*
   canvas {
@@ -359,6 +481,31 @@
     background: rgb(200,249,88);
     background: linear-gradient(90deg, rgba(200,249,88,1) 0%, rgba(39,255,52,0.880529579996061) 23%, rgba(39,255,52,0.8721262186515231) 83%, rgba(200,249,88,1) 100%);
   }
+
+  .lamp-preheat {
+    color: white;
+    background: rgb(200,249,88);
+    background: linear-gradient(90deg, rgba(200,249,88,1) 0%, rgba(39,255,52,0.880529579996061) 23%, rgba(39,255,52,0.8721262186515231) 83%, rgba(200,249,88,1) 100%);
+  }
+
+  .lamp-light {
+    color: white;
+    background: rgb(200,249,88);
+    background: linear-gradient(90deg, rgba(200,249,88,1) 0%, rgba(39,255,52,0.880529579996061) 23%, rgba(39,255,52,0.8721262186515231) 83%, rgba(200,249,88,1) 100%);
+  }
+
+  .lamp-medium {
+    color: white;
+    background: rgb(200,249,88);
+    background: linear-gradient(90deg, rgba(200,249,88,1) 0%, rgba(39,255,52,0.880529579996061) 23%, rgba(39,255,52,0.8721262186515231) 83%, rgba(200,249,88,1) 100%);
+  }
+
+  .lamp-dark {
+    color: white;
+    background: rgb(200,249,88);
+    background: linear-gradient(90deg, rgba(200,249,88,1) 0%, rgba(39,255,52,0.880529579996061) 23%, rgba(39,255,52,0.8721262186515231) 83%, rgba(200,249,88,1) 100%);
+  }
+
 
   .lamp-off {
     color: white;
