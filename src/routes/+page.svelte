@@ -32,7 +32,7 @@
         const datas = await response.json();
         console.log(datas);
         let vals = datas.payload.enose_raw_datas.map((d) => d.adc_mq135);
-        let ts = datas.payload.enose_raw_datas.map((d) => d.id);
+        let ts = datas.payload.enose_raw_datas.map((d) => d.time.split("T")[1]);
 
         data = vals;
         labels = ts;
@@ -70,7 +70,7 @@
         console.log("device active : ", isDeviceActive);
         setTimeout(()=>{
             GetIsDeviceActive();
-          }, 100);
+          }, 1000);
       }
     
     const SendStartRoast = async () => {
@@ -146,6 +146,11 @@
                   ]
               },
             plugins: [lineMarker],
+            options:{
+              animation: {
+                  duration: 0,
+                }
+              }
           });
 
         chart1 = new Chart(ctx1, {
@@ -162,7 +167,7 @@
               },
            // plugins: [lineMarker],
           });
- 
+        console.log("mounted"); 
         GetData();
         GetIsDeviceActive();
       });

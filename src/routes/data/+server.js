@@ -18,8 +18,13 @@ export async function GET({ url }) {
   while(clientTracker == tracker)
     await new Promise(r => setTimeout(r, 100));
   
-  const enoseRawDatas = await EnoseRawData.findAll();
+  const enoseRawDatas = await EnoseRawData.findAll({
+    limit : 10,
+    order : [["time", "desc"]],
+  });
   const enosePpmDatas = await EnosePPMData.findAll();
+  
+  enoseRawDatas.reverse();
 
   return new Response(JSON.stringify({
     payload: {

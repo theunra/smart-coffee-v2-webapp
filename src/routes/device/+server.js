@@ -27,13 +27,15 @@ export async function GET({ url }) {
       isDeviceActive = true;     
       await new Promise(r => setTimeout(r, 100));
     }
-
-    res.payload.event = deviceEvent[0];
     
-    deviceEvent.shift();
+    if(isDeviceHasEvent){
+      res.payload.event = deviceEvent[0];
     
-    if(deviceEvent.length > 0) isDeviceHasEvent = true;
-    else isDeviceHasEvent = false;
+      deviceEvent.shift();
+    
+      if(deviceEvent.length > 0) isDeviceHasEvent = true;
+      else isDeviceHasEvent = false;
+    }
   }
   
   return new Response(JSON.stringify(res));

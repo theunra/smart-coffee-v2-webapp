@@ -1,6 +1,8 @@
 import requests
 from random import randint
 from datetime import datetime
+from threading import Thread
+import time
 
 device_api_addr = 'https://sites.saveforest.cloud/device'
 data_api_addr =  'https://sites.saveforest.cloud/data'
@@ -25,7 +27,7 @@ def listenEvent():
         print("Timeout, retrying")
     elif (r.status_code == 200):
         print(r.json())
-        return r.json();
+        return r.json()
     else:
         print("unhandled")
 
@@ -34,28 +36,53 @@ def sendSensorData(sensordata):
     print(r.url)
     if (r.status_code == 200):
         print(r.json())
-        return r.json();
+        return r.json()
     else:
         print("unhandled")
 
+isRun = True
+
+isSendData = False
+
+def sendDataRoutine():     
+    while(isRun):
+        payload = {
+		    "method" : "single",
+	        "raw_datas" :{
+    	        "time" : datetime.utcnow().isoformat(),
+    	        "adc_mq135" : randint(0, 50),
+    	        "adc_mq136" : 3,
+    	        "adc_mq137" : 13,
+    	         "adc_mq138" : 23,
+    	        "adc_mq2" : 53,
+    	        "adc_mq3" : 53,
+    	        "adc_tgs822" : 12,
+    	        "adc_tgs2620" : 14,
+    	        "temp" : 50,
+    	        "humidity": 32.4,
+    	    }
+    	}
+
+        if(isSendData):
+            print("send")
+            sendSensorData(payload)
+        
+        time.sleep(2)
 
 connect()
 
+send_data_thread = Thread(target=sendDataRoutine)
+send_data_thread.start()
+
 while(True):
-	payload = {
-		"method" : "single",
-	        "raw_datas" :{
-	            "time" : datetime.utcnow().isoformat(),
-	            "adc_mq135" : randint(0, 50),
-	            "adc_mq136" : 3,
-	            "adc_mq137" : 13,
-	            "adc_mq138" : 23,
-	        "adc_mq2" : 53,
-	        "adc_mq3" : 53,
-	        "adc_tgs822" : 12,
-	        "adc_tgs2620" : 14,
-	        "temp" : 50,
-	        "humidity": 32.4,
-	            }
-	        }
+
     res = listenEvent()
+    
+    try:
+        if(res["payload"]["event"]["param"] == "start-roast"):
+            print("Start roasting")
+            isSendData = True
+    except Exception as e:
+        print(e)
+
+isRun = False
