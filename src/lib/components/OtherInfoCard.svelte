@@ -14,6 +14,10 @@
   </div>
 
 <style>
+    .content-container {
+        background-color: rgba(255, 255, 255, 0.6);
+        box-shadow: 2px 10px 10px rgb(203 203 203);
+    }
     .card-button {
         color: white;
         background: green;
