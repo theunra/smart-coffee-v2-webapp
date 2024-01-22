@@ -1,7 +1,8 @@
 import { error } from '@sveltejs/kit';
-import {sequelize, EnoseRawData, EnosePPMData} from '$lib/model/postgres.jsx';
+import {sequelize, EnoseRawData, EnosePPMData, RoastSession, Roast} from '$lib/model/postgres.jsx';
 
 const deviceId = "77f04f7b-0ec0-4ce7-b8e7-ff629e90d8c3";
+const deviceRoastSessionId = 0;
 let deviceEvent = [];
 let isDeviceActive = false;
 let isDeviceHasEvent = false;
@@ -57,10 +58,32 @@ async function CheckClientActive(){
 
 export async function POST({ request }) {	
   const {id, param} = await request.json(); 
+  const response = {
+    status : 200,
+    payload : {}
+  };
 
   if(param == "connect"){
     if(id !== deviceId) return new Response(404);
+    const roastSession = RoastSession.findOne({
+      where : {
+        id : deviceRoastSessionId,
+      },
+    });
+
+    if(roastSession.roastId != null){
+      const roast = Roast.findOne({
+        where: {
+          id : roastSession.roastId,
+        },
+      });
+      response.payload.roast = roast;
+    }
+
     isDeviceActive = true;
+    response.payload.connected = true;
+    response.payload.roastSession = roastSession;
+
     CheckClientActive();
   } 
   else if (param == "start-roast") {
@@ -71,5 +94,5 @@ export async function POST({ request }) {
     isDeviceHasEvent = true;
   }
 
-  return new Response(JSON.stringify({status : 200}));
+  return new Response(JSON.stringify(response));
 }

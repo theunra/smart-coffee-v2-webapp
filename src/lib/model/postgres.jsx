@@ -87,166 +87,166 @@ export const EnosePPMData = sequelize.define("enose_ppm_datas", {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
-      mq135_co : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      mq135_alcohol : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      mq135_co2 : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      mq135_toluen : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      mq135_nh4 : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      mq135_aceton : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      mq136_co : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      mq136_nh4 : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      mq136_h2s : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      mq137_co : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      mq137_ethanol : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      mq137_nh3 : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      mq138_benzene : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      mq138_hexane : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      mq138_co : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      mq138_alcohol : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      mq138_propane : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      mq2_h2 : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      mq2_lpg : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      mq2_co : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      mq2_alcohol : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      mq2_propane : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      mq3_lpg : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      mq3_ch4 : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      mq3_co : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      mq3_alcohol : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      mq3_benzene : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      mq3_hexane : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      tgs822_methane : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      tgs822_co : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      tgs822_isobutane : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      tgs822_hexane : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      tgs822_benzene : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      tgs822_ethanol : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      tgs822_acetone : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      tgs2620_methane : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      tgs2620_co : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      tgs2620_isobutane : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      tgs2620_h2 : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
-      tgs2620_ethanol : {
-                type: DataTypes.DOUBLE,
-                allowNull: false,
-            },
+  mq135_co : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  mq135_alcohol : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  mq135_co2 : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  mq135_toluen : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  mq135_nh4 : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  mq135_aceton : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  mq136_co : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  mq136_nh4 : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  mq136_h2s : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  mq137_co : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  mq137_ethanol : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  mq137_nh3 : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  mq138_benzene : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  mq138_hexane : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  mq138_co : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  mq138_alcohol : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  mq138_propane : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  mq2_h2 : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  mq2_lpg : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  mq2_co : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  mq2_alcohol : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  mq2_propane : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  mq3_lpg : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  mq3_ch4 : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  mq3_co : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  mq3_alcohol : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  mq3_benzene : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  mq3_hexane : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  tgs822_methane : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  tgs822_co : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  tgs822_isobutane : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  tgs822_hexane : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  tgs822_benzene : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  tgs822_ethanol : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  tgs822_acetone : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  tgs2620_methane : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  tgs2620_co : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  tgs2620_isobutane : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  tgs2620_h2 : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
+  tgs2620_ethanol : {
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+  },
   time: {
     type: DataTypes.DATE,
     allowNull: false,
@@ -275,8 +275,20 @@ export const Roast = sequelize.define("roasts", {
   },   
   endTime: {
     type: DataTypes.DATE,
-    allowNull: false,
+    allowNull: true,
   },
 });
+
+export const RoastSession = sequelize.define("roast_sessions", {
+  id : {
+    type : DataTypes.INTEGER,
+    allowNull : false,
+    primaryKey : true,
+  },
+  roastId : {
+    type : DataTypes.INTEGER,
+    allowNull : true,
+  }
+})
 
 sequelize.sync({alter: true});

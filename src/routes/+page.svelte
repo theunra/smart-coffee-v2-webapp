@@ -1,5 +1,5 @@
 <script>
-  import {onMount} from 'svelte';
+    import {onMount} from 'svelte';
     import Chart from 'chart.js/auto';
     
     let raw_datas = {
@@ -194,9 +194,11 @@
         
         chart.update();
       }
-
-        lineMarker = {
-            id: 'lineMarker',
+      
+      class LineMarker{
+        CreateLineMarker(id, color){
+          const lineMarker = {
+            id: id,
             linePos: -1,
             isShow: false,
             beforeDatasetsDraw: (chart, args, plugins) => {
@@ -206,14 +208,36 @@
 
                 if(!lineMarker.isShow) return;
                 ctx.beginPath();
-                ctx.strokeStyle = 'orange';
+                ctx.strokeStyle = color;
                 ctx.lineWidth = 3;
                 ctx.moveTo(x.getPixelForValue(lineMarker.linePos), top);
                 ctx.lineTo(x.getPixelForValue(lineMarker.linePos), bottom);
                 ctx.stroke();
-
               },
-          };
+          };  
+          return lineMarker;
+        }
+      }
+        lineMarker = new LineMarker().CreateLineMarker("preheatLineMarker", "blue");
+        // lineMarker = {
+        //     id: 'lineMarker',
+        //     linePos: -1,
+        //     isShow: false,
+        //     beforeDatasetsDraw: (chart, args, plugins) => {
+        //         const {ctx, chartArea : {top, bottom}, scales: { x }} = chart;
+               
+        //         ctx.save();
+
+        //         if(!lineMarker.isShow) return;
+        //         ctx.beginPath();
+        //         ctx.strokeStyle = 'orange';
+        //         ctx.lineWidth = 3;
+        //         ctx.moveTo(x.getPixelForValue(lineMarker.linePos), top);
+        //         ctx.lineTo(x.getPixelForValue(lineMarker.linePos), bottom);
+        //         ctx.stroke();
+
+        //       },
+        //   };
 
         chargeLineMarker = {
             id: 'chargeLineMarker',
