@@ -203,10 +203,10 @@
         chart.data.datasets[0].data = raw_datas.adc_mq135;
         chart.data.labels = labels;
         
-        lineMarker.linePos = lightIdx;
-        if(lightIdx == -1) lineMarker.isShow = false;
-        else lineMarker.isShow = true;
-        chart.config.plugins[0] = lineMarker;
+        lightLineMarker.linePos = lightIdx;
+        if(lightIdx == -1) lightLineMarker.isShow = false;
+        else lightLineMarker.isShow = true;
+        chart.config.plugins[0] = lightLineMarker;
         
         chargeLineMarker.linePos = chargeIdx;
         if(chargeIdx == -1) chargeLineMarker.isShow = false;
@@ -235,7 +235,7 @@
                   },
               ]
           },
-        plugins: [lineMarker, chargeLineMarker],
+        plugins: [lightLineMarker, chargeLineMarker],
         options:{
           animation: {
               duration: 0,
@@ -266,11 +266,11 @@
                   },
               ]
           },
-        // plugins: [lineMarker],
+        // plugins: [lightLineMarker],
         });
     }
     
-    lineMarker = new LineMarker().CreateLineMarker("preheatLineMarker", "blue");
+    lightLineMarker = new LineMarker().CreateLineMarker("preheatLineMarker", "blue");
     chargeLineMarker = new LineMarker().CreateLineMarker("chargeLineMarker", "green");
 
     onMount(async () => {
