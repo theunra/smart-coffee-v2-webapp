@@ -1,7 +1,42 @@
 <script>
     import {onMount} from 'svelte';
     import Chart from 'chart.js/auto';
+    import OtherInfoCard from '$lib/components/OtherInfoCard.svelte';
     
+    class LineMarker{
+      CreateLineMarker(id, color){
+        const lineMarker = {
+          id: id,
+          linePos: -1,
+          isShow: false,
+          beforeDatasetsDraw: (chart, args, plugins) => {
+              const {ctx, chartArea : {top, bottom}, scales: { x }} = chart;
+              
+              ctx.save();
+
+              if(!lineMarker.isShow) return;
+              ctx.beginPath();
+              ctx.strokeStyle = color;
+              ctx.lineWidth = 3;
+              ctx.moveTo(x.getPixelForValue(lineMarker.linePos), top);
+              ctx.lineTo(x.getPixelForValue(lineMarker.linePos), bottom);
+              ctx.stroke();
+            },
+        };  
+        return lineMarker;
+      }
+    }
+
+    let ctx;
+    let ctx1;
+    let chart;
+    let chart1;
+
+    let chargeLineMarker;
+    let lightLineMarker;
+    let mediumLineMarker;
+    let darkLineMarker;
+
     let raw_datas = {
         adc_mq135 : [],
         roastStatus : [],
@@ -19,15 +54,17 @@
 
     let currentRoastStatus = -1;
 
-    let x = 3;
+    let dataTracker = 3;
     let chargeIdx = -1;
     let lightIdx = -1;
     let isDeviceActive = false;
 
-    const api_url = '/data';
+    const url_data_api = '/data';
+    const url_device_api = "/device";
+
     const GetData = async () => {
-        const response = await fetch(`${api_url}?` + new URLSearchParams({
-            tracker : x, 
+        const response = await fetch(`${url_data_api}?` + new URLSearchParams({
+            tracker : dataTracker, 
             get_raw_data : true,
           }), {
               method : 'GET',
@@ -73,13 +110,13 @@
 
         //labels = ts;
         
-        x = datas.tracker;
+        dataTracker = datas.tracker;
 
         await GetData();
       }
 
     const InsertData = async () => {
-        const response = await fetch(`${api_url}`, {
+        const response = await fetch(`${url_data_api}`, {
             method: 'POST',
             headers: {
                 'Accept' : 'application/json',
@@ -90,8 +127,6 @@
         const status = await response.json();
         console.log(status);
       }
-
-    const url_device_api = "/device";
     
     const GetIsDeviceActive = async () => {
         const response = await fetch(`${url_device_api}?` + new URLSearchParams({
@@ -122,16 +157,6 @@
         const status = await response.json();
         console.log(status);
       }
-
-
-    let ctx;
-    let ctx1;
-    let chart;
-    let chart1;
-    let lineMarker;
-    let chargeLineMarker;
-
-    let f = 2;
     
     let lastLampId = "";
 
@@ -195,78 +220,61 @@
         chart.update();
       }
       
-      class LineMarker{
-        CreateLineMarker(id, color){
-          const lineMarker = {
-            id: id,
-            linePos: -1,
-            isShow: false,
-            beforeDatasetsDraw: (chart, args, plugins) => {
-                const {ctx, chartArea : {top, bottom}, scales: { x }} = chart;
-               
-                ctx.save();
+    
 
-                if(!lineMarker.isShow) return;
-                ctx.beginPath();
-                ctx.strokeStyle = color;
-                ctx.lineWidth = 3;
-                ctx.moveTo(x.getPixelForValue(lineMarker.linePos), top);
-                ctx.lineTo(x.getPixelForValue(lineMarker.linePos), bottom);
-                ctx.stroke();
+    const CreateSensorGraphs = () => {
+      chart = new Chart(ctx, {
+        type: 'line',
+        data : {
+            labels : labels,
+            datasets: [
+                  {            
+                    label : 'mq135',
+                    tension : 0.3,
+                    data : raw_datas.adc_mq135,
+                  },
+              ]
+          },
+        plugins: [lineMarker, chargeLineMarker],
+        options:{
+          animation: {
+              duration: 0,
+            },
+            elements: {
+                point: {
+                    radius : 0,
+                  },
               },
-          };  
-          return lineMarker;
-        }
-      }
-        lineMarker = new LineMarker().CreateLineMarker("preheatLineMarker", "blue");
-        chargeLineMarker = new LineMarker().CreateLineMarker("chargeLineMarker", "green");
+            scale : {
+                y : {
+                    max : 40000,
+                    min : 0,
+                  }
+              }
+          },
+      });
+
+      chart1 = new Chart(ctx1, {
+        type: 'line',
+        data : {
+            labels : labels,
+            datasets: [
+                  {            
+                    label : 'mq135 co',
+                    tension : 0.3,
+                    data : ppm_datas.mq135_co,
+                  },
+              ]
+          },
+        // plugins: [lineMarker],
+        });
+    }
+    
+    lineMarker = new LineMarker().CreateLineMarker("preheatLineMarker", "blue");
+    chargeLineMarker = new LineMarker().CreateLineMarker("chargeLineMarker", "green");
 
     onMount(async () => {
-        chart = new Chart(ctx, {
-            type: 'line',
-            data : {
-                labels : labels,
-                datasets: [
-                      {            
-                        label : 'mq135',
-                        tension : 0.3,
-                        data : raw_datas.adc_mq135,
-                      },
-                  ]
-              },
-            plugins: [lineMarker, chargeLineMarker],
-            options:{
-              animation: {
-                  duration: 0,
-                },
-                elements: {
-                    point: {
-                        radius : 0,
-                      },
-                  },
-                scale : {
-                    y : {
-                        max : 40000,
-                        min : 0,
-                      }
-                  }
-              },
-          });
-
-        chart1 = new Chart(ctx1, {
-            type: 'line',
-            data : {
-                labels : labels,
-                datasets: [
-                      {            
-                        label : 'mq135 co',
-                        tension : 0.3,
-                        data : ppm_datas.mq135_co,
-                      },
-                  ]
-              },
-           // plugins: [lineMarker],
-          });
+        CreateSensorGraphs();
         console.log("mounted"); 
         GetData();
         GetIsDeviceActive();
@@ -369,7 +377,7 @@
             </div>
           </div>
         </div>
-        <div class="row content-container rounded-4 p-4 mt-3">
+        <!-- <div class="row content-container rounded-4 p-4 mt-3">
           <div class="col">
             <div class="row">
               <div class="fw-bold">Other Info</div>
@@ -379,10 +387,10 @@
             </div>
             </div>
           </div>
-        </div>
- 
+        </div> -->
+        <OtherInfoCard/>
       </div>
-      <div id="info-card" class="col-4" hidden>
+      <div id="info-card" class="col-4" hidden> <!--Info Card-->
         <div class="row content-container rounded-4 p-4">
           <div class="row">
             <div class="fw-bold">Roast Info</div>
@@ -411,7 +419,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </div><!--//Info Card-->
     </div>
   </div>
 </div>
