@@ -377,17 +377,6 @@
             </div>
           </div>
         </div>
-        <!-- <div class="row content-container rounded-4 p-4 mt-3">
-          <div class="col">
-            <div class="row">
-              <div class="fw-bold">Other Info</div>
-              <div class="row">
-                <div class="col">Device Active</div>
-                <div class="col">{isDeviceActive}</div>
-            </div>
-            </div>
-          </div>
-        </div> -->
         <OtherInfoCard isDeviceActive="{isDeviceActive}"/>
       </div>
       <div id="info-card" class="col-4" hidden> <!--Info Card-->
@@ -408,17 +397,7 @@
             </div>
           </div>
         </div>        
-        <div class="row content-container rounded-4 p-4 mt-3">
-          <div class="col">
-            <div class="row">
-              <div class="fw-bold">Other Info</div>
-              <div class="row">
-                <div class="col">Device Active</div>
-                <div class="col">{isDeviceActive}</div>
-            </div>
-            </div>
-          </div>
-        </div>
+        <OtherInfoCard isDeviceActive="{isDeviceActive}"/>
       </div><!--//Info Card-->
     </div>
   </div>

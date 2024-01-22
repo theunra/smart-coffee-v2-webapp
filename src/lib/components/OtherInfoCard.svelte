@@ -12,3 +12,17 @@
       </div>
     </div>
   </div>
+
+<style>
+    .card-button {
+        color: white;
+        background: green;
+        border-radius: 20px;
+    }
+
+    .card-button:hover{
+        color: black;
+        background: greenyellow;
+        cursor: pointer;
+    }
+</style>
