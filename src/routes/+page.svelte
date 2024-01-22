@@ -2,7 +2,8 @@
     import {onMount} from 'svelte';
     import Chart from 'chart.js/auto';
     import OtherInfoCard from '$lib/components/OtherInfoCard.svelte';
-    
+    import RoastStatusLamp from '../lib/components/RoastStatusLamp.svelte';
+
     class LineMarker{
       CreateLineMarker(id, color){
         const lineMarker = {
@@ -158,45 +159,6 @@
         console.log(status);
       }
     
-    let lastLampId = "";
-
-    $: {
-        let lampId = "";
-
-        switch(currentRoastStatus){
-            case 0:
-              lampId = "preheat";
-              break;
-            case 1:
-              lampId = "charge";
-              break;
-            case 2:
-              lampId = "light";
-              break;
-            case 3:
-              lampId = "medium";
-              break;
-            case 4:
-              lampId = "dark";
-              break;
-            default:
-              break;
-          }
-        
-        if(lampId != ""){
-            const lamp = document.getElementById("lamp-" + lampId);
-            console.log(lamp.className);
-            lamp.className = lamp.className.replace("lamp-off", "");
-
-            if(lastLampId != ""){
-                const lastLamp = document.getElementById("lamp-" + lastLampId);
-                console.log(lastLamp.className);
-                lastLamp.className = lastLamp.className + " lamp-off";
-                console.log(lastLamp.className);
-              }
-            lastLampId = lampId;
-          }
-      }
 
     $: if (chart) {
         console.log("x is changed");
@@ -327,24 +289,7 @@
           <div class="row" width=400 height=200>
             <canvas id="mychart1" bind:this={ctx1} width={700} height={200}></canvas>
           </div> 
- 
-         <div class="row p-2">
-            <div id="lamp-preheat" class="col fw-bold p-2 m-2 rounded-3 lamp-preheat lamp-off">
-              PREHEAT
-            </div>
-            <div id="lamp-charge" class="col fw-bold p-2 m-2 rounded-3 lamp-charge lamp-off">
-              CHARGE
-            </div>
-            <div id="lamp-light" class="col fw-bold p-2 m-2 rounded-3 lamp-light lamp-off">
-              LIGHT
-            </div>
-            <div id="lamp-medium" class="col fw-bold p-2 m-2 rounded-3 lamp-medium lamp-off">
-              MEDIUM
-            </div>
-            <div id="lamp-dark" class="col fw-bold p-2 m-2 rounded-3 lamp-dark lamp-off">
-              DARK
-            </div>
-          </div>          
+          <RoastStatusLamp currentRoastStatus="{currentRoastStatus}"/>
        </div>
       </div>
       <div id="setup-card" class="col-4">
@@ -404,14 +349,14 @@
 </div>
 </div>
 
-<!--
+
 <button on:click={()=>{
         currentRoastStatus = currentRoastStatus + 1;
         if(currentRoastStatus > 4) currentRoastStatus = 0;
         }}>
         p
 </button>
--->
+
 <style>
   /*
   canvas {
@@ -446,44 +391,6 @@
     #border: 5px solid white;
     #border-radius: 10%;
     #background-color: white;
-  }
-
-  .lamp-charge {
-    color: white;
-    background: rgb(200,249,88);
-    background: linear-gradient(90deg, rgba(200,249,88,1) 0%, rgba(39,255,52,0.880529579996061) 23%, rgba(39,255,52,0.8721262186515231) 83%, rgba(200,249,88,1) 100%);
-  }
-
-  .lamp-preheat {
-    color: white;
-    background: rgb(200,249,88);
-    background: linear-gradient(90deg, rgba(200,249,88,1) 0%, rgba(39,255,52,0.880529579996061) 23%, rgba(39,255,52,0.8721262186515231) 83%, rgba(200,249,88,1) 100%);
-  }
-
-  .lamp-light {
-    color: white;
-    background: rgb(200,249,88);
-    background: linear-gradient(90deg, rgba(200,249,88,1) 0%, rgba(39,255,52,0.880529579996061) 23%, rgba(39,255,52,0.8721262186515231) 83%, rgba(200,249,88,1) 100%);
-  }
-
-  .lamp-medium {
-    color: white;
-    background: rgb(200,249,88);
-    background: linear-gradient(90deg, rgba(200,249,88,1) 0%, rgba(39,255,52,0.880529579996061) 23%, rgba(39,255,52,0.8721262186515231) 83%, rgba(200,249,88,1) 100%);
-  }
-
-  .lamp-dark {
-    color: white;
-    background: rgb(200,249,88);
-    background: linear-gradient(90deg, rgba(200,249,88,1) 0%, rgba(39,255,52,0.880529579996061) 23%, rgba(39,255,52,0.8721262186515231) 83%, rgba(200,249,88,1) 100%);
-  }
-
-
-  .lamp-off {
-    color: white;
-    background: rgb(112,112,112);
-    background: linear-gradient(90deg, rgba(112,112,112,1) 0%, rgba(159,159,159,0.880529579996061) 23%, rgba(142,142,142,0.8721262186515231) 83%, rgba(131,131,131,1) 100%);
-
   }
 
   .card-button {
