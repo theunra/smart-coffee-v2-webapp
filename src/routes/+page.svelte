@@ -27,6 +27,7 @@
         return lineMarker;
       }
     }
+      
 
     let ctx;
     let ctx1;
@@ -234,7 +235,7 @@
     
     lightLineMarker = new LineMarker().CreateLineMarker("preheatLineMarker", "blue");
     chargeLineMarker = new LineMarker().CreateLineMarker("chargeLineMarker", "green");
-
+    
     onMount(async () => {
         CreateSensorGraphs();
         console.log("mounted"); 
