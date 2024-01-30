@@ -1,4 +1,4 @@
-const LongPollingTimeout = 60 * 1000; //ms , 1 minute
+const LongPollingTimeout = 20 * 1000; //ms
 
 export async function LongPolling({ doCheck, onTimeout, onFinish }) {	
     let timeout = false;

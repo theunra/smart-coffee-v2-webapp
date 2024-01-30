@@ -41,11 +41,12 @@ export async function GET({ url }) {
   const getRawData = url.searchParams.get('get_raw_data');
   const getPpmData = url.searchParams.get('get_ppm_data');
 
-  let response;
+  let response={};
 
-  LongPolling({
+  await LongPolling({
     doCheck : async () => {
       if(clientTracker == tracker) return false;
+      else return true;
     },
 
     onTimeout : async () => {
