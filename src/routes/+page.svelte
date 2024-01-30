@@ -2,6 +2,7 @@
     import {onMount} from 'svelte';
     import Chart from 'chart.js/auto';
     import LineMarker from '$lib/components/LineMarker.js';
+    import RoastStatusLamp from '$lib/components/RoastStatusLamp.svelte';
     import ControlPanel from '$lib/components/ControlPanel.svelte';
 
     let ctx;

@@ -1,6 +1,5 @@
 <script>
     import OtherInfoCard from '$lib/components/OtherInfoCard.svelte';
-    import RoastStatusLamp from '../lib/components/RoastStatusLamp.svelte';
 
     export let onClickStartSetup = (param)=>{};
     export const showSession = (isShow)=>{__intoSession(isShow);}
