@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
 import {sequelize, EnoseRawData, EnosePPMData} from '$lib/model/postgres.jsx';
-
+import { LongPolling } from '$lib/services/long-polling';
 /*
  * tracker to keep all client data up-to-date
  * client start in any other number , tracker = 3
@@ -10,29 +10,69 @@ import {sequelize, EnoseRawData, EnosePPMData} from '$lib/model/postgres.jsx';
 let tracker = 0;
 
 /** @type {import('./$types').RequestHandler} */
+// export async function GET({ url }) {	
+//   const clientTracker = url.searchParams.get('tracker');
+//   const getRawData = url.searchParams.get('get_raw_data');
+//   const getPpmData = url.searchParams.get('get_ppm_data'); 
+
+//   while(clientTracker == tracker)
+//     await new Promise(r => setTimeout(r, 100));
+  
+//   const enoseRawDatas = await EnoseRawData.findAll({
+// //    limit : 100,
+//     order : [["time", "desc"]],
+//   });
+//   const enosePpmDatas = await EnosePPMData.findAll();
+  
+//   enoseRawDatas.reverse();
+
+//   return new Response(JSON.stringify({
+//     payload: {
+//       enose_raw_datas : enoseRawDatas,
+//       enose_ppm_datas : enosePpmDatas,
+//     },
+//     tracker : tracker,
+//   }));
+// }
+
+/** @type {import('./$types').RequestHandler} */
 export async function GET({ url }) {	
   const clientTracker = url.searchParams.get('tracker');
   const getRawData = url.searchParams.get('get_raw_data');
-  const getPpmData = url.searchParams.get('get_ppm_data'); 
+  const getPpmData = url.searchParams.get('get_ppm_data');
 
-  while(clientTracker == tracker)
-    await new Promise(r => setTimeout(r, 100));
-  
-  const enoseRawDatas = await EnoseRawData.findAll({
-//    limit : 100,
-    order : [["time", "desc"]],
-  });
-  const enosePpmDatas = await EnosePPMData.findAll();
-  
-  enoseRawDatas.reverse();
+  let response;
 
-  return new Response(JSON.stringify({
-    payload: {
-      enose_raw_datas : enoseRawDatas,
-      enose_ppm_datas : enosePpmDatas,
+  LongPolling({
+    doCheck : async () => {
+      if(clientTracker == tracker) return false;
     },
-    tracker : tracker,
-  }));
+
+    onTimeout : async () => {
+      response = {
+        status : "timeout",
+      };
+    },
+
+    onFinish : async () => {
+        const enoseRawDatas = await EnoseRawData.findAll({
+          order : [["time", "desc"]],
+        });
+        const enosePpmDatas = await EnosePPMData.findAll();
+        
+        enoseRawDatas.reverse();
+
+        response = {
+          payload: {
+            enose_raw_datas : enoseRawDatas,
+            enose_ppm_datas : enosePpmDatas,
+          },
+          tracker : tracker,
+        };
+    }
+  });
+
+  return new Response(JSON.stringify(response));
 }
 
 function flipTracker(){
