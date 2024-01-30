@@ -1,33 +1,8 @@
 <script>
     import {onMount} from 'svelte';
     import Chart from 'chart.js/auto';
-    import OtherInfoCard from '$lib/components/OtherInfoCard.svelte';
-    import RoastStatusLamp from '../lib/components/RoastStatusLamp.svelte';
-
-    class LineMarker{
-      CreateLineMarker(id, color){
-        const lineMarker = {
-          id: id,
-          linePos: -1,
-          isShow: false,
-          beforeDatasetsDraw: (chart, args, plugins) => {
-              const {ctx, chartArea : {top, bottom}, scales: { x }} = chart;
-              
-              ctx.save();
-
-              if(!lineMarker.isShow) return;
-              ctx.beginPath();
-              ctx.strokeStyle = color;
-              ctx.lineWidth = 3;
-              ctx.moveTo(x.getPixelForValue(lineMarker.linePos), top);
-              ctx.lineTo(x.getPixelForValue(lineMarker.linePos), bottom);
-              ctx.stroke();
-            },
-        };  
-        return lineMarker;
-      }
-    }
-      
+    import LineMarker from '$lib/components/LineMarker.js';
+    import ControlPanel from '$lib/components/ControlPanel.svelte';
 
     let ctx;
     let ctx1;
@@ -116,19 +91,6 @@
 
         await GetData();
       }
-
-    const InsertData = async () => {
-        const response = await fetch(`${url_data_api}`, {
-            method: 'POST',
-            headers: {
-                'Accept' : 'application/json',
-                'Content-Type' : 'application/json',
-              },
-            body: JSON.stringify({val : 15}),
-          });
-        const status = await response.json();
-        console.log(status);
-      }
     
     const GetIsDeviceActive = async () => {
         const response = await fetch(`${url_device_api}?` + new URLSearchParams({
@@ -183,8 +145,6 @@
         chart.update();
       }
       
-    
-
     const CreateSensorGraphs = () => {
       chart = new Chart(ctx, {
         type: 'line',
@@ -243,17 +203,14 @@
         GetIsDeviceActive();
       });
 
-    const onClickStartSetup = async () => {
-        if(!isDeviceActive) {
-            console.log("device is offline");
-            return;
-          }
-        await SendStartRoast();
-        const infocard = document.getElementById("info-card");
-        const setupcard = document.getElementById("setup-card");
-        infocard.hidden = false;
-        setupcard.hidden = true;
-      }
+    const onClickStartSetup = async (param) => {
+      console.log(param);
+      if(!isDeviceActive) {
+          console.log("device is offline");
+          return;
+        }
+      await SendStartRoast();
+    }
 </script>
 
 <div class="container-fluid row text-center p-3 rounded-4 main-back min-vh-100">
@@ -266,97 +223,48 @@
       <div class="col fs-6 rounded-start mt-1 pt-2 pb-2 main-container">Dashboard</div>
     </div>
   </div>
-<div class="col main-container p-3 ps-5 rounded-4">
-  <div class="row mt-4 align-items-start" style="height: 10vh">
-    <div class="col text-start">
-      <div class="fw-bold fs-3">Dashboard Monitoring</div>
-      <div class="fs-5">Smart Coffee Roaster Realtime Monitoring System</div>
-    </div>
-  </div>
-  <div class="row content-container me-3 rounded-4">
-    <div class="row">
-      <div class="col text-start ps-4 pt-4">
-        <div class="fw-bolder fs-5">Monitoring Graph</div>
-      </div>
-      <div class="col">
+  <div class="col main-container p-3 ps-5 rounded-4">
+    <div class="row mt-4 align-items-start" style="height: 10vh">
+      <div class="col text-start">
+        <div class="fw-bold fs-3">Dashboard Monitoring</div>
+        <div class="fs-5">Smart Coffee Roaster Realtime Monitoring System</div>
       </div>
     </div>
-    <div class="row p-4">
-      <div class="col">
-        <div class="row">
-          <div class="row" width=400 height=200>
-            <canvas id="mychart" bind:this={ctx} width={700} height={200}></canvas>
-          </div>          
-          <div class="row" width=400 height=200>
-            <canvas id="mychart1" bind:this={ctx1} width={700} height={200}></canvas>
-          </div> 
-          <RoastStatusLamp currentRoastStatus="{currentRoastStatus}"/>
-       </div>
+    <div class="row content-container me-3 rounded-4">
+      <div class="row">
+        <div class="col text-start ps-4 pt-4">
+          <div class="fw-bolder fs-5">Monitoring Graph</div>
+        </div>
+        <div class="col">
+        </div>
       </div>
-      <div id="setup-card" class="col-4">
-        <div class="row content-container rounded-4 p-4">
+      <div class="row p-4">
+        <div class="col">
           <div class="row">
-            <div class="fw-bold mb-4">Start a new Roasting</div>
-            <div class="row mb-2">
-              <div class="col">Bean Type</div>
-              <div class="col">
-                <select name="bean-type" id="bean-type">
-                  <option value="arabica">Arabica</option>
-                  <option value="robusta">Robusta</option>
-                </select>
-              </div>
-            </div>
-            <div class="row mb-2">
-              <div class="col">Roast Level</div>
-              <div class="col">
-                <select name="roast-level" id="roast-level">
-                  <option value="light">Light</option>
-                  <option value="medium">Medium</option>
-                  <option value="dark">Dark</option>
-                </select>
-              </div>
+            <div class="row" width=400 height=200>
+              <canvas id="mychart" bind:this={ctx} width={700} height={200}></canvas>
+            </div>          
+            <div class="row" width=400 height=200>
+              <canvas id="mychart1" bind:this={ctx1} width={700} height={200}></canvas>
             </div> 
-            <div class="row">
-              <div class="col"></div>
-              <div class="col fs-5 fw-bold mt-4 card-button" on:click={onClickStartSetup}>START</div>
-              <div class="col"></div>
-            </div>
+            <RoastStatusLamp currentRoastStatus="{currentRoastStatus}"/>
           </div>
         </div>
-        <OtherInfoCard isDeviceActive="{isDeviceActive}"/>
+        <ControlPanel 
+          onClickStartSetup="{onClickStartSetup}"
+          />
       </div>
-      <div id="info-card" class="col-4" hidden> <!--Info Card-->
-        <div class="row content-container rounded-4 p-4">
-          <div class="row">
-            <div class="fw-bold">Roast Info</div>
-            <div class="row">
-              <div class="col">Bean Type</div>
-              <div class="col">Arabica</div>
-            </div>
-            <div class="row">
-              <div class="col">Roast Level</div>
-              <div class="col">Light</div>
-            </div>
-            <div class="row">
-              <div class="col">Time Elapsed</div>
-              <div class="col">00:12:42</div>
-            </div>
-          </div>
-        </div>        
-        <OtherInfoCard isDeviceActive="{isDeviceActive}"/>
-      </div><!--//Info Card-->
     </div>
   </div>
 </div>
-</div>
 
 
-<button on:click={()=>{
+<!-- <button on:click={()=>{
         currentRoastStatus = currentRoastStatus + 1;
         if(currentRoastStatus > 4) currentRoastStatus = 0;
         }}>
         p
-</button>
+</button> -->
 
 <style>
   /*
@@ -373,7 +281,7 @@
     background-color: blue;
   }
 
-  .main-back{
+  .main-back {
     #background: rgb(255,185,216) !important;
     background: radial-gradient(circle, rgba(255,185,216,0.7852914847579657) 0%, rgba(196,234,255,0.5612018489036239) 100%);
   }
@@ -392,18 +300,6 @@
     #border: 5px solid white;
     #border-radius: 10%;
     #background-color: white;
-  }
-
-  .card-button {
-    color: white;
-    background: green;
-    border-radius: 20px;
-  }
-
-  .card-button:hover{
-    color: black;
-    background: greenyellow;
-    cursor: pointer;
   }
 
 </style>

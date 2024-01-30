@@ -10,32 +10,6 @@ import { LongPolling } from '$lib/services/long-polling';
 let tracker = 0;
 
 /** @type {import('./$types').RequestHandler} */
-// export async function GET({ url }) {	
-//   const clientTracker = url.searchParams.get('tracker');
-//   const getRawData = url.searchParams.get('get_raw_data');
-//   const getPpmData = url.searchParams.get('get_ppm_data'); 
-
-//   while(clientTracker == tracker)
-//     await new Promise(r => setTimeout(r, 100));
-  
-//   const enoseRawDatas = await EnoseRawData.findAll({
-// //    limit : 100,
-//     order : [["time", "desc"]],
-//   });
-//   const enosePpmDatas = await EnosePPMData.findAll();
-  
-//   enoseRawDatas.reverse();
-
-//   return new Response(JSON.stringify({
-//     payload: {
-//       enose_raw_datas : enoseRawDatas,
-//       enose_ppm_datas : enosePpmDatas,
-//     },
-//     tracker : tracker,
-//   }));
-// }
-
-/** @type {import('./$types').RequestHandler} */
 export async function GET({ url }) {	
   const clientTracker = url.searchParams.get('tracker');
   const getRawData = url.searchParams.get('get_raw_data');
@@ -51,7 +25,7 @@ export async function GET({ url }) {
 
     onTimeout : async () => {
       response = {
-        status : "timeout",
+        status : 504,
       };
     },
 
