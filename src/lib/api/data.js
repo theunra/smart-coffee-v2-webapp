@@ -1,6 +1,6 @@
 const url_data_api = '/data';
 
-const GetData = async (dataTracker, get_raw_data) => {
+export const GetData = async (dataTracker, get_raw_data) => {
     const response = await fetch(`${url_data_api}?` + new URLSearchParams({
         tracker : dataTracker, 
         get_raw_data : get_raw_data,

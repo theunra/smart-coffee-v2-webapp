@@ -1,7 +1,7 @@
 <script>
     import {onMount} from 'svelte';
     import Chart from 'chart.js/auto';
-    import {EnoseGraphData} from '@lib/digest/enose-data.js';
+    import {EnoseGraphData} from '$lib/digest/enose-data.js';
     import LineMarker from '$lib/components/LineMarker.js';
     
     let ctx;
@@ -15,10 +15,14 @@
     export let enoseGraphData = new EnoseGraphData();
     export let graphDataType;
     export let graphId;
-
+  
+    /*
     for(let i = 0; i < 1000; i++) {
         enoseGraphData.labelData.push(i);
     }
+
+    console.log(enoseGraphData);
+    */
 
     $: if (chart) {
         const chargeIdx = enoseGraphData.roastLampIdx.charge;
@@ -80,7 +84,7 @@
         }
 
         let chartDatasets;
-        if(graphDataType == 'raw') chartDatasets = ['adc_mq135', 'adc_mq136', 'adc_mq137', 'adc_mq137'];
+        if(graphDataType == 'raw') chartDatasets = ['adc_mq135', 'adc_mq136', 'adc_mq137', 'adc_mq138'];
         else chartDatasets = ['mq135_co'];
 
         const chartDatasetsOption = chartDatasets.map((label) => ({            
