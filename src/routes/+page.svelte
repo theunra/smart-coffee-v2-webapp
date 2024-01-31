@@ -1,208 +1,18 @@
 <script>
     import {onMount} from 'svelte';
-    import Chart from 'chart.js/auto';
-    import LineMarker from '$lib/components/LineMarker.js';
     import RoastStatusLamp from '$lib/components/RoastStatusLamp.svelte';
     import ControlPanel from '$lib/components/ControlPanel.svelte';
-
-    let ctx;
-    let ctx1;
-    let chart;
-    let chart1;
-
-    let chargeLineMarker;
-    let lightLineMarker;
-    let mediumLineMarker;
-    let darkLineMarker;
-
-    let raw_datas = {
-        adc_mq135 : [],
-        roastStatus : [],
-      };
-
-    let ppm_datas = {
-        mq135_co : [],
-      };
-
-    let labels = [];
-
-    for(let i = 0; i < 1000; i++){
-        labels.push(i);
-      }
+    import MonitoringGraph from '$lib/components/MonitoringGraph.svelte';
 
     let currentRoastStatus = -1;
 
     let dataTracker = 3;
-    let chargeIdx = -1;
-    let lightIdx = -1;
-    let isDeviceActive = false;
-
-    const url_data_api = '/data';
-    const url_device_api = "/device";
-
-    const GetData = async () => {
-        const response = await fetch(`${url_data_api}?` + new URLSearchParams({
-            tracker : dataTracker, 
-            get_raw_data : true,
-          }), {
-              method : 'GET',
-            });
-        
-        const status = await response.status;
-
-        if(status != 200){
-            //failed
-            if(status == 504) {
-                //timeout
-                await GetData(); // retry
-              }
-            else{
-                console.log(response);
-              }
-          }
-
-        const datas = await response.json();
-        console.log(datas);
-        raw_datas.adc_mq135 = datas.payload.enose_raw_datas.map((d) => d.adc_mq135);
-        raw_datas.roastStatus = datas.payload.enose_raw_datas.map((d) => d.roastStatus);
-        currentRoastStatus = raw_datas.roastStatus[raw_datas.roastStatus.length - 1];
-        
-        chargeIdx = -1;
-        lightIdx = -1;
-
-        for(let k = 0; k < raw_datas.roastStatus.length; k++){
-            if(raw_datas.roastStatus[k] == 1) {//first light found
-                chargeIdx = k;
-                break;
-              }
-          }
-
-        for(let k = chargeIdx; k < raw_datas.roastStatus.length; k++){
-            if(raw_datas.roastStatus[k] == 2) {//first light found
-                lightIdx = k;
-                break;
-              }
-          }
-        
-        //let ts = datas.payload.enose_raw_datas.map((d) => d.time.split("T")[1]);
-
-        //labels = ts;
-        
-        dataTracker = datas.tracker;
-
-        await GetData();
-      }
     
-    const GetIsDeviceActive = async () => {
-        const response = await fetch(`${url_device_api}?` + new URLSearchParams({
-            param : "isDeviceActive",
-          }), {
-            method: 'GET',
-            });       
-        
-        const resp_data = await response.json();
-
-        isDeviceActive = resp_data.payload.isDeviceActive;
-
-        console.log("device active : ", isDeviceActive);
-        setTimeout(()=>{
-            GetIsDeviceActive();
-          }, 1000);
-      }
-    
-    const SendStartRoast = async () => {
-        const response = await fetch(`${url_device_api}`, {
-            method: 'POST',
-            headers: {
-                'Accept' : 'application/json',
-                'Content-Type' : 'application/json',
-              },
-            body: JSON.stringify({param : "start-roast"}),
-          });
-        const status = await response.json();
-        console.log(status);
-      }
-    
-
-    $: if (chart) {
-        console.log("x is changed");
-        chart.data.datasets[0].data = raw_datas.adc_mq135;
-        chart.data.labels = labels;
-        
-        lightLineMarker.linePos = lightIdx;
-        if(lightIdx == -1) lightLineMarker.isShow = false;
-        else lightLineMarker.isShow = true;
-        chart.config.plugins[0] = lightLineMarker;
-        
-        chargeLineMarker.linePos = chargeIdx;
-        if(chargeIdx == -1) chargeLineMarker.isShow = false;
-        else chargeLineMarker.isShow = true;
-        chart.config.plugins[1] = chargeLineMarker;
-        
-        console.log(chart.config.plugins);
-
-        console.log(chart.data.datasets);
-        
-        chart.update();
-      }
+    let isDeviceActive = false;    
       
-    const CreateSensorGraphs = () => {
-      chart = new Chart(ctx, {
-        type: 'line',
-        data : {
-            labels : labels,
-            datasets: [
-                  {            
-                    label : 'mq135',
-                    tension : 0.3,
-                    data : raw_datas.adc_mq135,
-                  },
-              ]
-          },
-        plugins: [lightLineMarker, chargeLineMarker],
-        options:{
-          animation: {
-              duration: 0,
-            },
-            elements: {
-                point: {
-                    radius : 0,
-                  },
-              },
-            scale : {
-                y : {
-                    max : 40000,
-                    min : 0,
-                  }
-              }
-          },
-      });
-
-      chart1 = new Chart(ctx1, {
-        type: 'line',
-        data : {
-            labels : labels,
-            datasets: [
-                  {            
-                    label : 'mq135 co',
-                    tension : 0.3,
-                    data : ppm_datas.mq135_co,
-                  },
-              ]
-          },
-        // plugins: [lightLineMarker],
-        });
-    }
-    
-    lightLineMarker = new LineMarker().CreateLineMarker("preheatLineMarker", "blue");
-    chargeLineMarker = new LineMarker().CreateLineMarker("chargeLineMarker", "green");
-    
     onMount(async () => {
-        CreateSensorGraphs();
-        console.log("mounted"); 
-        GetData();
         GetIsDeviceActive();
-      });
+    });
 
     const onClickStartSetup = async (param) => {
       console.log(param);
@@ -243,10 +53,10 @@
         <div class="col">
           <div class="row">
             <div class="row" width=400 height=200>
-              <canvas id="mychart" bind:this={ctx} width={700} height={200}></canvas>
+              <MonitoringGraph graphId="raw-chart" graphDataType="raw"/>
             </div>          
             <div class="row" width=400 height=200>
-              <canvas id="mychart1" bind:this={ctx1} width={700} height={200}></canvas>
+              <MonitoringGraph graphId="ppm-chart" graphDataType="ppm"/>
             </div> 
             <RoastStatusLamp currentRoastStatus="{currentRoastStatus}"/>
           </div>

@@ -3,13 +3,15 @@ export default class LineMarker{
       const lineMarker = {
         id: id,
         linePos: -1,
-        isShow: false,
+        isShow: true,
         beforeDatasetsDraw: (chart, args, plugins) => {
             const {ctx, chartArea : {top, bottom}, scales: { x }} = chart;
             
             ctx.save();
 
+            if(lineMarker.linePos < 1) return;
             if(!lineMarker.isShow) return;
+            
             ctx.beginPath();
             ctx.strokeStyle = color;
             ctx.lineWidth = 3;
