@@ -1,6 +1,6 @@
 const url_device_api = "/device";
 
-const GetIsDeviceActive = async () => {
+export const GetIsDeviceActive = async () => {
     const response = await fetch(`${url_device_api}?` + new URLSearchParams({
             param : "isDeviceActive",
         }), {
@@ -11,7 +11,7 @@ const GetIsDeviceActive = async () => {
     return resp_data;
 }
 
-const SendStartRoast = async () => {
+export const SendStartRoast = async () => {
     const response = await fetch(`${url_device_api}`, {
         method: 'POST',
         headers: {

@@ -1,5 +1,6 @@
 <script>
     import {onMount} from 'svelte';
+    import {GetIsDeviceActive, SendStartRoast} from '$lib/api/device.js'
     import RoastStatusLamp from '$lib/components/RoastStatusLamp.svelte';
     import ControlPanel from '$lib/components/ControlPanel.svelte';
     import MonitoringGraph from '$lib/components/MonitoringGraph.svelte';
