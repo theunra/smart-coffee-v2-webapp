@@ -27,8 +27,9 @@
     const PollEnoseData = async () => {
         let datas = await GetData(enoseGraphData.dataTracker);
        
-        const {rawData} = processEnoseGraphData(datas);
+        const {rawData, dataTracker} = processEnoseGraphData(datas);
         enoseGraphData.rawData.adc_mq135 = rawData.adc_mq135;
+        enoseGraphData.dataTracker = dataTracker;
 
         PollEnoseData();
       }
@@ -73,7 +74,7 @@
         <div class="col">
           <div class="row">
             <div class="row" width=400 height=200>
-              <MonitoringGraph graphId="raw-chart" graphDataType="raw" graphData="{enoseGraphData.rawData}"/>
+              <MonitoringGraph graphId="raw-chart" graphDataType="raw" bind:graphData="{enoseGraphData.rawData}"/>
             </div>          
             <div class="row" width=400 height=200>
               <MonitoringGraph graphId="ppm-chart" graphDataType="ppm" graphData="{enoseGraphData}"/>
