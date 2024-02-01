@@ -6,12 +6,14 @@ const deviceId = "77f04f7b-0ec0-4ce7-b8e7-ff629e90d8c3";
 const deviceRoastSessionId = 0;
 let deviceEvent = [];
 let isDeviceActive = false;
+let isDeviceConnected = false;
 let isDeviceHasEvent = false;
 
 const deviceGetTimeout = 5000; //ms
 
 /** @type {import('./$types').RequestHandler} */
-export async function GET({ url }) {	 
+export async function GET({ url }) {
+  isDeviceConnected = true;
   const param = url.searchParams.get('param');
   const res = {
     status: 200, 
@@ -65,25 +67,31 @@ export async function GET({ url }) {
       },
     });
   }
-  
+
+  isDeviceConnected = false;
+
   return new Response(JSON.stringify(res));
 }
 
 async function CheckClientActive(){
   await new Promise(r => setTimeout(r, 5000));
 
-  if(isDeviceActive){
-    isDeviceActive = false;
-  }
-  else {
-    return;
-  }
+  if(!isDeviceConnected) {
+    if(isDeviceActive){
+      isDeviceActive = false;
+    }
+    else {
+      return; //stop routine
+    }
+  } else isDeviceActive = true;
 
   CheckClientActive();
 }
 
 
 export async function POST({ request }) {	
+  isDeviceConnected = true;
+
   const {id, param} = await request.json(); 
   const response = {
     status : 200,
@@ -140,12 +148,28 @@ export async function POST({ request }) {
       response.payload.message = err;
     }
   }
+  else if (param == "close-session"){
+    const roastSession = await RoastSession.findOne({
+      where : {
+        id : deviceRoastSessionId,
+      },
+    });
+
+    roastSession.changed('roastId', true);
+    await roastSession.update({roastId : null});
+
+    response.payload.message = "closing session success";
+    response.payload.roastSession = roastSession;
+    pushDeviceEvent("close-session");
+  }
   else if (param == "start-roast") {
     pushDeviceEvent("start-roast");
   }
   else if (param == "stop-roast"){
     pushDeviceEvent("stop-roast");
   }
+
+  isDeviceConnected = false;
 
   return new Response(JSON.stringify(response));
 }
