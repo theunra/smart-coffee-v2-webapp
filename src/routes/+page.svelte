@@ -1,7 +1,7 @@
 <script>
     import {onMount} from 'svelte';
-      import {GetIsDeviceActive, SendStartRoast} from '$lib/api/device.js';
-      import {GetData} from '$lib/api/data.js';
+    import {GetIsDeviceActive, SendStartRoast} from '$lib/api/device.js';
+    import {GetData} from '$lib/api/data.js';
     import RoastStatusLamp from '$lib/components/RoastStatusLamp.svelte';
     import ControlPanel from '$lib/components/ControlPanel.svelte';
     import MonitoringGraph from '$lib/components/MonitoringGraph.svelte';
@@ -26,15 +26,11 @@
 
     const PollEnoseData = async () => {
         let datas = await GetData(enoseGraphData.dataTracker);
-        console.log(datas);
-        //dataTracker = datas.tracker;
-       //enoseGraphData.rawData.adc_mq135 = datas.payload.enose_raw_datas.map((d) => d.adc_mq135);
        
-        const {rawData} = processEnoseGraphData(datas, enoseGraphData);
+        const {rawData} = processEnoseGraphData(datas);
         enoseGraphData.rawData.adc_mq135 = rawData.adc_mq135;
-        
-        //enoseGraphData.rawData.adc_mq135.push(10);
-        console.log(enoseGraphData);
+
+        PollEnoseData();
       }
 
 

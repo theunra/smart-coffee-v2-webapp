@@ -1,45 +1,47 @@
 <script>
-    export let currentRoastStatus = 0;
+  import {RoastStatus} from '$lib/digest/enose-data.js';
+  
+  export let currentRoastStatus = 0;
 
-    let lastLampId = "";
+  let lastLampId = "";
 
-    $: {
-        let lampId = "";
+  $: {
+    let lampId = "";
 
-        switch(currentRoastStatus){
-            case 0:
-              lampId = "preheat";
-              break;
-            case 1:
-              lampId = "charge";
-              break;
-            case 2:
-              lampId = "light";
-              break;
-            case 3:
-              lampId = "medium";
-              break;
-            case 4:
-              lampId = "dark";
-              break;
-            default:
-              break;
-          }
-        
-        if(lampId != ""){
-            const lamp = document.getElementById("lamp-" + lampId);
-            console.log(lamp.className);
-            lamp.className = lamp.className.replace("lamp-off", "");
+    switch(currentRoastStatus){
+      case RoastStatus.PREHEAT:
+        lampId = "preheat";
+        break;
+      case RoastStatus.CHARGE:
+        lampId = "charge";
+        break;
+      case RoastStatus.LIGHT:
+        lampId = "light";
+        break;
+      case RoastStatus.MEDIUM:
+        lampId = "medium";
+        break;
+      case RoastStatus.DARK:
+        lampId = "dark";
+        break;
+      default:
+        break;
+    }
+      
+    if(lampId != ""){
+      const lamp = document.getElementById("lamp-" + lampId);
+      console.log(lamp.className);
+      lamp.className = lamp.className.replace("lamp-off", "");
 
-            if(lastLampId != ""){
-                const lastLamp = document.getElementById("lamp-" + lastLampId);
-                console.log(lastLamp.className);
-                lastLamp.className = lastLamp.className + " lamp-off";
-                console.log(lastLamp.className);
-              }
-            lastLampId = lampId;
-          }
+      if(lastLampId != ""){
+        const lastLamp = document.getElementById("lamp-" + lastLampId);
+        console.log(lastLamp.className);
+        lastLamp.className = lastLamp.className + " lamp-off";
+        console.log(lastLamp.className);
       }
+      lastLampId = lampId;
+    }
+  }
 </script>
 
 <div class="row p-2">
