@@ -3,7 +3,7 @@ import {sequelize, EnoseRawData, EnosePPMData, RoastSession, Roast} from '$lib/m
 import { LongPolling } from '$lib/services/long-polling';
 
 const deviceId = "77f04f7b-0ec0-4ce7-b8e7-ff629e90d8c3";
-const deviceRoastSessionId = 1;
+const deviceRoastSessionId = 1; //current device session
 let deviceEvent = [];
 let isDeviceActive = false;
 let isDeviceConnected = false;
@@ -14,16 +14,16 @@ const deviceGetTimeout = 5000; //ms
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ url }) {
   isDeviceConnected = true;
-  const param = url.searchParams.get('param');
+  const key = url.searchParams.get('key');
   const res = {
     status: 200, 
     payload : {},
   };
 
-  if(param == "isDeviceActive"){
+  if(key == "is-device-active"){
     res.payload.isDeviceActive = isDeviceActive;
   }
-  else if (param == "roastSession"){
+  else if (key == "roast-session"){
     const roastSession = await RoastSession.findOne({
       where : {
         id : deviceRoastSessionId,
@@ -45,7 +45,17 @@ export async function GET({ url }) {
       res.message = "no roast session";
     }
   }
-  else if (param == "event") {
+  else if (key == "all-roast"){
+    const roasts = await Roast.findAll({});
+    if(roasts) {
+      res.payload.roasts = roasts;
+    }
+    else {
+      res.status = 400;
+      res.message = "cant find any roasts";
+    }
+  }
+  else if (key == "event") {
     await LongPolling({
       doCheck : async ()=>{
         isDeviceConnected = true;
@@ -69,6 +79,7 @@ export async function GET({ url }) {
       },
     });
   }
+  else return new Response(400);
 
   isDeviceConnected = false;
 
@@ -100,7 +111,7 @@ export async function POST({ request }) {
     payload : {}
   };
 
-  if(req.param == "connect"){
+  if(req.key == "connect"){
     if(req.id !== deviceId) return new Response(404);
     const roastSession = await RoastSession.findOne({
       where : {
@@ -123,7 +134,7 @@ export async function POST({ request }) {
 
     CheckClientActive();
   }
-  else if (req.param == "create-session"){
+  else if (req.key == "create-session"){
     //try{
       //ntar dipindah
       const beanTypeDict = {"arabica" : 0, "robusta" : 1};
@@ -147,7 +158,6 @@ export async function POST({ request }) {
         response.payload.roastSession = roastSession;
         response.payload.roast = roast;
       }
-
      
       pushDeviceEvent("create-session");
     //}
@@ -157,7 +167,7 @@ export async function POST({ request }) {
     //  response.request = req;
    // }
   }
-  else if (req.param == "close-session"){
+  else if (req.key == "finish-session"){
     const roastSession = await RoastSession.findOne({
       where : {
         id : deviceRoastSessionId,
@@ -167,14 +177,14 @@ export async function POST({ request }) {
     roastSession.changed('roastId', true);
     await roastSession.update({roastId : null});
 
-    response.payload.message = "closing session success";
+    response.payload.message = "finishing session success";
     response.payload.roastSession = roastSession;
-    pushDeviceEvent("close-session");
+    pushDeviceEvent("finish-session");
   }
-  else if (req.param == "start-roast") {
+  else if (req.key == "start-roast") {
     pushDeviceEvent("start-roast");
   }
-  else if (req.param == "stop-roast"){
+  else if (req.key == "stop-roast"){
     pushDeviceEvent("stop-roast");
   }
   else return new Response(400);
@@ -186,7 +196,7 @@ export async function POST({ request }) {
 
 function pushDeviceEvent(event){
   deviceEvent.push({
-    param : event,
+    key : event,
   });
 
   isDeviceHasEvent = true;
