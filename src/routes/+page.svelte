@@ -73,10 +73,10 @@
         <div class="col">
           <div class="row">
             <div class="row" width=400 height=200>
-              <MonitoringGraph graphId="raw-chart" graphDataType="raw" enoseGraphData="{enoseGraphData}"/>
+              <MonitoringGraph graphId="raw-chart" graphDataType="raw" graphData="{enoseGraphData.rawData}"/>
             </div>          
             <div class="row" width=400 height=200>
-              <MonitoringGraph graphId="ppm-chart" graphDataType="ppm" enoseGraphData="{enoseGraphData}"/>
+              <MonitoringGraph graphId="ppm-chart" graphDataType="ppm" graphData="{enoseGraphData}"/>
             </div> 
             <RoastStatusLamp currentRoastStatus="{currentRoastStatus}"/>
           </div>

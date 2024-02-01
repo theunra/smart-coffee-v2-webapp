@@ -12,7 +12,9 @@
     let mediumLineMarker;
     let darkLineMarker;
 
-    export let enoseGraphData = new EnoseGraphData();
+    // export let enoseGraphData = new EnoseGraphData();
+    export let graphData;
+    export let roastLampIdx;
     export let graphDataType;
     export let graphId;
   
@@ -25,14 +27,14 @@
     */
 
     $: if (chart) {
-        const chargeIdx = enoseGraphData.roastLampIdx.charge;
-        const lightIdx = enoseGraphData.roastLampIdx.light;
+        const chargeIdx = roastLampIdx.charge;
+        const lightIdx = roastLampIdx.light;
         
-        let graphDatas; 
-        if(graphDataType == 'raw') graphDatas = enoseGraphData.rawData.serialize();
-        else graphDatas = enoseGraphData.ppmData.serialize();
+        let graphDatas = graphData.serialize(); 
+        // if(graphDataType == 'raw') graphDatas = rawData.serialize();
+        // else graphDatas = ppmData.serialize();
 
-        const labels = enoseGraphData.labelData;
+        const labels = labelData;
         
         for(let i = 0; i < chart.data.datasets.length; i++){
             chart.data.datasets[i].data = graphDatas[i];
@@ -97,8 +99,6 @@
             "tgs822_isobutane",  "tgs822_hexane",       "tgs822_benzene",   "tgs822_ethanol",   "tgs822_acetone",   "tgs2620_methane", 
             "tgs2620_co",        "tgs2620_isobutane",   "tgs2620_h2",       "tgs2620_ethanol"
         ];
-        
-        
 
         const chartDatasetsOption = chartDatasets.map((label) => ({            
             label : label,
