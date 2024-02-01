@@ -32,10 +32,17 @@
 
     const PollEnoseData = async () => {
         let datas = await GetData(rawEnoseGraphData.dataTracker);
+        if(!datas){
+            PollEnoseData();
+            return;
+          }
        
-        const {rawData, dataTracker} = processEnoseGraphData(datas);
-        rawEnoseGraphData.rawData.adc_mq135 = rawData.adc_mq135;
-        rawEnoseGraphData.dataTracker = dataTracker;
+        const data = processEnoseGraphData(datas);
+        rawEnoseGraphData.sensorData.adc_mq135 = data.rawData.adc_mq135;
+        rawEnoseGraphData.sensorData.adc_mq136 = data.rawData.adc_mq136;
+        rawEnoseGraphData.dataTracker = data.dataTracker;
+        rawEnoseGraphData.roastLampIdx = data.roastLampIdx;
+        currentRoastStatus = data.currentRoastStatus;
 
         PollEnoseData();
       }
@@ -79,11 +86,11 @@
       <div class="row p-4">
         <div class="col">
           <div class="row">
-            <div class="row" width=400 height=200>
+            <div class="row">
               <MonitoringGraph graphId="raw-chart" enoseGraphData="{rawEnoseGraphData}"/>
             </div>          
-            <div class="row" width=400 height=200>
-              <MonitoringGraph graphId="ppm-chart" GraphData="{rawEnoseGraphData}"/>
+            <div class="row">
+              <MonitoringGraph graphId="ppm-chart" enoseGraphData="{rawEnoseGraphData}"/>
             </div> 
             <RoastStatusLamp currentRoastStatus="{currentRoastStatus}"/>
           </div>
@@ -131,6 +138,11 @@
   .content-container {
     background-color: rgba(255, 255, 255, 0.6);
     box-shadow: 2px 10px 10px rgb(203 203 203);
+  }
+
+  .graph-container {
+    height : 200;
+    width : 100%;
   }
   
   .logo-img{

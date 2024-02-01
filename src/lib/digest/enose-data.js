@@ -197,19 +197,19 @@ export function processEnoseGraphData(datas){
   
   const roastLampIdx = {};
 
-  roastLampIdx.chargeIdx = -1;
-  roastLampIdx.lightIdx = -1;
+  roastLampIdx.charge = -1;
+  roastLampIdx.light = -1;
 
   for(let k = 0; k < roastStatus.length; k++){
     if(roastStatus[k] == RoastStatus.CHARGE) {//first charge found
-      roastLampIdx.chargeIdx = k;
+      roastLampIdx.charge = k;
       break;
     }
   }
 
-  for(let k = roastLampIdx.chargeIdx; k < roastStatus.length; k++){
+  for(let k = roastLampIdx.charge; k < roastStatus.length; k++){
     if(roastStatus[k] == RoastStatus.LIGHT) {//first light found
-      roastLampIdx.lightIdx = k;
+      roastLampIdx.light = k;
       break;
     }
   }
@@ -233,5 +233,6 @@ export function processEnoseGraphData(datas){
     roastLampIdx : roastLampIdx,
     dataTracker : dataTracker,
     currentRoastStatus : currentRoastStatus,
+    roastStatus : roastStatus,
   };
 }

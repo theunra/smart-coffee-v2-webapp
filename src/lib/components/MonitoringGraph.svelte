@@ -21,6 +21,7 @@
     $: if (chart) {
         const chargeIdx = enoseGraphData.roastLampIdx.charge;
         const lightIdx = enoseGraphData.roastLampIdx.light;
+        console.log(enoseGraphData.roastLampIdx);
         
         let graphDatas = enoseGraphData.sensorData.serialize(); 
         // if(graphDataType == 'raw') graphDatas = rawData.serialize();
@@ -59,6 +60,8 @@
                     chargeLineMarker,
                 ],
                 options:{
+                responsive: true,
+                    maintainAspectRatio: false,
                 animation: {
                     duration: 0,
                     },
@@ -103,13 +106,25 @@
         chart = new Chart(ctx, rawChartOptions);
     }
 
+      let height = 200;
+      let expand_text = "Expand";
     onMount(async () => {
         CreateSensorGraphs();
     });
 </script>
+<div class="p" id="pp">
+  <canvas id={graphId} class="graph" height={height} width=700 bind:this={ctx}></canvas>
+</div>
 
-<canvas id={graphId} bind:this={ctx} width={700} height={200}></canvas>
-
+<button hidden on:click={()=>{
+        const cc = document.getElementById("pp");
+        cc.style.height = "50vh";
+        expand_text = "Expand";
+       
+        }}>{expand_text}</button>
 <style>
-
+  .p{
+    height : 30vh;
+    width : 100%;
+  }
 </style>

@@ -31,13 +31,19 @@
         infocard.hidden = !isShow;
         setupcard.hidden = isShow;
     }
-
+    
+    const __hide = ()=>{
+        const infocard = document.getElementById("info-card");
+        const setupcard = document.getElementById("setup-card");
+        infocard.hidden = true;
+        setupcard.hidden = true;
+    }
 </script>
 
 <div id="setup-card" class="col-4">
     <div class="row content-container rounded-4 p-4">
       <div class="row">
-        <div class="fw-bold mb-4">Start a new Roasting</div>
+        <div class="fw-bold mb-4">Start a new Roasting Session</div>
         <div class="row mb-2">
           <div class="col">Bean Type</div>
           <div class="col">
@@ -65,6 +71,7 @@
       </div>
     </div>
     <OtherInfoCard isDeviceActive="{isDeviceActive}"/>
+    <button hidden on:click={()=>{__hide();}}>p</button>
   </div>
   <div id="info-card" class="col-4" hidden> <!--Info Card-->
     <div class="row content-container rounded-4 p-4">
@@ -86,7 +93,6 @@
     </div>        
     <OtherInfoCard isDeviceActive="{isDeviceActive}"/>
 </div><!--//Info Card-->
-
 <style>
     .content-container {
         background-color: rgba(255, 255, 255, 0.6);
