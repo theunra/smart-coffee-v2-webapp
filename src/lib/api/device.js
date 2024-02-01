@@ -11,7 +11,18 @@ export const GetIsDeviceActive = async () => {
     return resp_data;
 }
 
-export const SendStartRoast = async () => {
+export const GetRoastSession = async () => {
+    const response = await fetch(`${url_device_api}?` + new URLSearchParams({
+            param : "roastSession",
+        }), {
+        method: 'GET',
+    });
+    
+    const resp_data = await response.json();
+    return resp_data;
+}
+
+export const SendStartRoast = async (param) => {
     const response = await fetch(`${url_device_api}`, {
         method: 'POST',
         headers: {
@@ -23,3 +34,18 @@ export const SendStartRoast = async () => {
     const status = await response.json();
     return status;
 }
+
+export const SendCreateSession = async (param) => {
+    const response = await fetch(`${url_device_api}`, {
+        method: 'POST',
+        headers: {
+            'Accept' : 'application/json',
+            'Content-Type' : 'application/json',
+        },
+        body: JSON.stringify({...param, param : "create-session"}),
+    });
+    const status = await response.json();
+    return status;
+}
+
+

@@ -5,12 +5,40 @@
     export const showSession = (isShow)=>{__intoSession(isShow);}
     export let isDeviceActive = false;
     export let isSession = false;
-    export let beanType = "-";
-    export let timeStart = "-";
-    export let roastLevel = "-";
+    
+      export let roast = {
+          beanType : '-',
+          startTime : '-',
+          level : '-',
+        };
 
-    let __timeElapsed = "-";
+      let beanType = '-';
+      let roastLevel = '-';
 
+      export let roastSession = {
+
+        };
+
+      //ntar findah
+      const roastBeanTypeList = ["arabica", "robusta"];
+      const roastLevelList = ["light", "medium", "dark"];
+
+      $: if(roast){
+          if(roast.beanType != '-') beanType = roastBeanTypeList[roast.beanType];
+          if(roast.level != '-') roastLevel = roastLevelList[roast.level];
+         }
+
+      let __timeElapsed = "-";
+      let __timeKeeper;
+
+      function doubleToTimeString(num){
+          const min = parseInt(num / 60);
+          const sec = parseInt(((num / 60) - min) * 60);
+
+          return `${min} min ${sec} sec`;
+        }
+
+      
     function __getSelection(id) {
         const doc = document.getElementById(id)
         const sel = doc.options[doc.selectedIndex].value;
@@ -30,6 +58,20 @@
         const setupcard = document.getElementById("setup-card");
         infocard.hidden = !isShow;
         setupcard.hidden = isShow;
+
+        if(__timeKeeper) clearInterval(__timeKeeper);
+        
+        if(isShow){
+          __timeKeeper = setInterval(()=>{
+              if(roast && roast.startTime){
+                const startTime = roast.startTime;
+                __timeElapsed = new Date().getTime() - new Date(startTime).getTime();
+                __timeElapsed /= (1000);
+                __timeElapsed = doubleToTimeString(__timeElapsed);
+              }
+            }, 1000);
+          }
+
     }
     
     const __hide = ()=>{

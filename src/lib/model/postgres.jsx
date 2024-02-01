@@ -256,11 +256,6 @@ export const EnosePPMData = sequelize.define("enose_ppm_datas", {
 
 
 export const Roast = sequelize.define("roasts", {
-  id : {
-    type : DataTypes.INTEGER,
-    allowNull : false,
-    primaryKey : true,
-  },
   beanType : {
     type : DataTypes.INTEGER, // 0 ... -> arabica , robusta
     allowNull : false, 
@@ -280,11 +275,6 @@ export const Roast = sequelize.define("roasts", {
 });
 
 export const RoastSession = sequelize.define("roast_sessions", {
-  id : {
-    type : DataTypes.INTEGER,
-    allowNull : false,
-    primaryKey : true,
-  },
   roastId : {
     type : DataTypes.INTEGER,
     allowNull : true,

@@ -21,7 +21,6 @@
     $: if (chart) {
         const chargeIdx = enoseGraphData.roastLampIdx.charge;
         const lightIdx = enoseGraphData.roastLampIdx.light;
-        console.log(enoseGraphData.roastLampIdx);
         
         let graphDatas = enoseGraphData.sensorData.serialize(); 
         // if(graphDataType == 'raw') graphDatas = rawData.serialize();

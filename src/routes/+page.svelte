@@ -1,11 +1,16 @@
 <script>
     import {onMount} from 'svelte';
-    import {GetIsDeviceActive, SendStartRoast} from '$lib/api/device.js';
+    import {GetIsDeviceActive, GetRoastSession, SendStartRoast, SendCreateSession} from '$lib/api/device.js';
     import {GetData} from '$lib/api/data.js';
     import RoastStatusLamp from '$lib/components/RoastStatusLamp.svelte';
     import ControlPanel from '$lib/components/ControlPanel.svelte';
     import MonitoringGraph from '$lib/components/MonitoringGraph.svelte';
     import {EnoseGraphData, processEnoseGraphData, EnoseRawData} from '$lib/digest/enose-data.js';
+    
+    let showSession;
+    
+    let roastSession;
+    let roast;
 
     const graphLabels = [];
     
@@ -23,11 +28,9 @@
     rawEnoseGraphData.labels = new EnoseRawData().getLabels();
     
     onMount(async () => {
-        GetIsDeviceActive();
         PollEnoseData();
-
-        
-
+        PollIsDeviceActive();
+        CheckSession();
       });
 
     const PollEnoseData = async () => {
@@ -47,19 +50,39 @@
         PollEnoseData();
       }
 
+      const PollIsDeviceActive = async () => {
+          const res = await GetIsDeviceActive();
+          if(res.status == 200){
+              isDeviceActive = res.payload.isDeviceActive;
+              console.log("device active : " ,isDeviceActive);
+            }
+          setTimeout(()=> {PollIsDeviceActive();}, 2000);
+        }
+
+      const CheckSession = async () => {
+          const res = await GetRoastSession();
+          console.log(res);
+          roastSession = res.payload.roastSession;
+          roast = res.payload.roast;
+          if(res.status == 200){
+              showSession(true);
+            }
+        }
+
 
     const onClickStartSetup = async (param) => {
       console.log(param);
       if(!isDeviceActive) {
           console.log("device is offline");
-          return;
+//          return;
         }
-      await SendStartRoast();
+        const resp = await SendCreateSession(param);
+        console.log(resp);
     }
 </script>
 
 <div class="container-fluid row text-center p-3 rounded-4 main-back min-vh-100">
-  <div class="col-1">
+  <div class="col-1 ">
     <div class="row">
       <!--<img class="img-fluid logo-img rounded-start" src="/smartcoffeelogo.png"/>-->
       <div class="col">logo</div>
@@ -96,7 +119,11 @@
           </div>
         </div>
         <ControlPanel 
+          bind:showSession="{showSession}"
           onClickStartSetup="{onClickStartSetup}"
+          isDeviceActive="{isDeviceActive}"
+          roast="{roast}"
+          roastSession="{roastSession}"
           />
       </div>
     </div>
