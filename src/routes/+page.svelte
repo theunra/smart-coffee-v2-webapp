@@ -5,31 +5,37 @@
     import RoastStatusLamp from '$lib/components/RoastStatusLamp.svelte';
     import ControlPanel from '$lib/components/ControlPanel.svelte';
     import MonitoringGraph from '$lib/components/MonitoringGraph.svelte';
-    import {EnoseGraphData, processEnoseGraphData} from '$lib/digest/enose-data.js';
+    import {EnoseGraphData, processEnoseGraphData, EnoseRawData} from '$lib/digest/enose-data.js';
 
+    const graphLabels = [];
+    
+    for(let i = 0; i< 1000; i++){
+        graphLabels.push(i);
+    }
 
     let currentRoastStatus = -1;
     
     let isDeviceActive = false;
 
-    let enoseGraphData = new EnoseGraphData();
-
+    let rawEnoseGraphData = new EnoseGraphData();
+    rawEnoseGraphData.labelData = graphLabels;
+    rawEnoseGraphData.sensorData = new EnoseRawData();
+    rawEnoseGraphData.labels = new EnoseRawData().getLabels();
+    
     onMount(async () => {
         GetIsDeviceActive();
         PollEnoseData();
 
-        for(let i = 0; i< 1000; i++){
-            enoseGraphData.labelData.push(i);
-        }
+        
 
       });
 
     const PollEnoseData = async () => {
-        let datas = await GetData(enoseGraphData.dataTracker);
+        let datas = await GetData(rawEnoseGraphData.dataTracker);
        
         const {rawData, dataTracker} = processEnoseGraphData(datas);
-        enoseGraphData.rawData.adc_mq135 = rawData.adc_mq135;
-        enoseGraphData.dataTracker = dataTracker;
+        rawEnoseGraphData.rawData.adc_mq135 = rawData.adc_mq135;
+        rawEnoseGraphData.dataTracker = dataTracker;
 
         PollEnoseData();
       }
@@ -74,10 +80,10 @@
         <div class="col">
           <div class="row">
             <div class="row" width=400 height=200>
-              <MonitoringGraph graphId="raw-chart" graphDataType="raw" bind:graphData="{enoseGraphData.rawData}"/>
+              <MonitoringGraph graphId="raw-chart" enoseGraphData="{rawEnoseGraphData}"/>
             </div>          
             <div class="row" width=400 height=200>
-              <MonitoringGraph graphId="ppm-chart" graphDataType="ppm" graphData="{enoseGraphData}"/>
+              <MonitoringGraph graphId="ppm-chart" GraphData="{rawEnoseGraphData}"/>
             </div> 
             <RoastStatusLamp currentRoastStatus="{currentRoastStatus}"/>
           </div>

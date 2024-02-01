@@ -6,7 +6,7 @@ export const RoastStatus = Object.freeze({
   DARK    : 4,
 })
 
-class EnoseRawData {
+export class EnoseRawData {
   adc_mq135    = [];
   adc_mq136    = [];
   adc_mq137    = [];
@@ -28,9 +28,16 @@ class EnoseRawData {
       this.adc_tgs2620,
     ];
   }
+
+  getLabels(){
+    return [
+      'adc_mq135', 'adc_mq136', 'adc_mq137', 'adc_mq138', 
+      'adc_mq2', 'adc_mq3', 'adc_tgs822', 'adc_tgs2620'
+    ];
+  }
 }
 
-class EnosePpmData {
+export class EnosePpmData {
   mq135_co            = [];
   mq135_alcohol       = [];
   mq135_co2           = [];
@@ -130,6 +137,36 @@ class EnosePpmData {
       this.tgs2620_ethanol,
     ];
   }
+
+  getLabels({mq135 = false, mq136 = false, mq137 = false, mq138 = false, mq2 = false, mq3 = false, tgs822 = false, tgs2620 = false}){
+    const labels = [];
+    if(mq135) {
+      labels.push(...["mq135_co", "mq135_alcohol", "mq135_co2", "mq135_toluen", "mq135_nh4", "mq135_aceton"]);
+    }
+    if(mq136) {
+      labels.push(...["mq136_co", "mq136_nh4", "mq136_h2s"]);
+    }
+    if(mq137){
+      labels.push(...["mq137_co", "mq137_ethanol", "mq137_nh3"]);
+    } 
+    if(mq138){
+      labels.push(...["mq138_benzene", "mq138_hexane", "mq138_co", "mq138_alcohol", "mq138_propane"]);
+    } 
+    if(mq2){
+      labels.push(...["mq2_h2", "mq2_lpg", "mq2_co", "mq2_alcohol", "mq2_propane"]);
+    } 
+    if(mq3){
+      labels.push(...["mq3_lpg", "mq3_ch4", "mq3_co", "mq3_alcohol", "mq3_benzene", "mq3_hexane"]);
+    } 
+    if(tgs822){
+      labels.push(...["tgs822_methane", "tgs822_co", "tgs822_isobutane", "tgs822_hexane", "tgs822_benzene", "tgs822_ethanol", "tgs822_acetone"]);
+    } 
+    if(tgs2620){
+      labels.push(...["tgs2620_methane", "tgs2620_co", "tgs2620_isobutane", "tgs2620_h2", "tgs2620_ethanol"]);
+    }
+
+    return labels;
+  }
 }
 
 class RoastLampIdx {
@@ -140,9 +177,10 @@ class RoastLampIdx {
 }
 
 export class EnoseGraphData {
-    rawData = new EnoseRawData();
-    ppmData = new EnosePpmData();
+    id = "";
+    sensorData = null;
     labelData = [];
+    labels = [];
     currentRoastStatus = 0;
     roastLampIdx = new RoastLampIdx();
     dataTracker = -1;
