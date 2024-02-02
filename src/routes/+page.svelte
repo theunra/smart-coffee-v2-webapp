@@ -1,84 +1,101 @@
 <script>
-    import {onMount} from 'svelte';
-    import {GetIsDeviceActive, GetRoastSession, SendStartRoast, SendCreateSession} from '$lib/api/device.js';
-    import {GetData} from '$lib/api/data.js';
-    import RoastStatusLamp from '$lib/components/RoastStatusLamp.svelte';
-    import ControlPanel from '$lib/components/ControlPanel.svelte';
-    import MonitoringGraph from '$lib/components/MonitoringGraph.svelte';
-    import {EnoseGraphData, processEnoseGraphData, EnoseRawData} from '$lib/digest/enose-data.js';
-    
-    let showSession;
-    
-    let roastSession;
-    let roast;
+  import {onMount} from 'svelte';
+  import {GetIsDeviceActive, GetRoastSession, SendStartRoast, SendStopRoast, SendCreateSession, SendFinishSession} from '$lib/api/device.js';
+  import {GetData} from '$lib/api/data.js';
+  import RoastStatusLamp from '$lib/components/RoastStatusLamp.svelte';
+  import ControlPanel from '$lib/components/ControlPanel.svelte';
+  import MonitoringGraph from '$lib/components/MonitoringGraph.svelte';
+  import {EnoseGraphData, processEnoseGraphData, EnoseRawData} from '$lib/digest/enose-data.js';
+  
+  let showSession;
 
-    const graphLabels = [];
-    
-    for(let i = 0; i< 1000; i++){
-        graphLabels.push(i);
-    }
+  let roastSession;
+  let roast;
 
-    let currentRoastStatus = -1;
-    
-    let isDeviceActive = false;
+  const graphLabels = [];
+  
+  for(let i = 0; i< 1000; i++){
+      graphLabels.push(i);
+  }
 
-    let rawEnoseGraphData = new EnoseGraphData();
-    rawEnoseGraphData.labelData = graphLabels;
-    rawEnoseGraphData.sensorData = new EnoseRawData();
-    rawEnoseGraphData.labels = new EnoseRawData().getLabels();
-    
-    onMount(async () => {
+  let currentRoastStatus = -1;
+  
+  let isDeviceActive = false;
+
+  let rawEnoseGraphData = new EnoseGraphData();
+  rawEnoseGraphData.labelData = graphLabels;
+  rawEnoseGraphData.sensorData = new EnoseRawData();
+  rawEnoseGraphData.labels = new EnoseRawData().getLabels();
+  
+  onMount(async () => {
+    PollEnoseData();
+    PollIsDeviceActive();
+    CheckSession();
+  });
+
+  const PollEnoseData = async () => {
+    let datas = await GetData(rawEnoseGraphData.dataTracker);
+    if(!datas){
         PollEnoseData();
-        PollIsDeviceActive();
-        CheckSession();
-      });
-
-    const PollEnoseData = async () => {
-        let datas = await GetData(rawEnoseGraphData.dataTracker);
-        if(!datas){
-            PollEnoseData();
-            return;
-          }
-       
-        const data = processEnoseGraphData(datas);
-        rawEnoseGraphData.sensorData.adc_mq135 = data.rawData.adc_mq135;
-        rawEnoseGraphData.sensorData.adc_mq136 = data.rawData.adc_mq136;
-        rawEnoseGraphData.dataTracker = data.dataTracker;
-        rawEnoseGraphData.roastLampIdx = data.roastLampIdx;
-        currentRoastStatus = data.currentRoastStatus;
-
-        PollEnoseData();
-      }
-
-      const PollIsDeviceActive = async () => {
-          const res = await GetIsDeviceActive();
-          if(res.status == 200){
-              isDeviceActive = res.payload.isDeviceActive;
-              console.log("device active : " ,isDeviceActive);
-            }
-          setTimeout(()=> {PollIsDeviceActive();}, 2000);
-        }
-
-      const CheckSession = async () => {
-          const res = await GetRoastSession();
-          console.log(res);
-          roastSession = res.payload.roastSession;
-          roast = res.payload.roast;
-          if(res.status == 200){
-              showSession(true);
-            }
-        }
-
-
-    const onClickStartSetup = async (param) => {
-      console.log(param);
-      if(!isDeviceActive) {
-          console.log("device is offline");
-//          return;
-        }
-        const resp = await SendCreateSession(param);
-        console.log(resp);
+        return;
     }
+    
+    const data = processEnoseGraphData(datas);
+    rawEnoseGraphData.sensorData.adc_mq135 = data.rawData.adc_mq135;
+    rawEnoseGraphData.sensorData.adc_mq136 = data.rawData.adc_mq136;
+    rawEnoseGraphData.dataTracker = data.dataTracker;
+    rawEnoseGraphData.roastLampIdx = data.roastLampIdx;
+    currentRoastStatus = data.currentRoastStatus;
+
+    PollEnoseData();
+  }
+
+  const PollIsDeviceActive = async () => {
+    const res = await GetIsDeviceActive();
+    if(res.status == 200){
+      isDeviceActive = res.payload.isDeviceActive;
+      console.log("device active : " ,isDeviceActive);
+    }
+    setTimeout(()=> {PollIsDeviceActive();}, 2000);
+  }
+
+  const CheckSession = async () => {
+    const res = await GetRoastSession();
+    console.log(res);
+    roastSession = res.payload.roastSession;
+    roast = res.payload.roast;
+    if(res.status == 200){
+      showSession(true);
+    }
+  }
+
+  async function onClickCreateSession(param){
+    console.log(param);    
+    const resp = await SendCreateSession(param);
+    console.log(resp);
+  }
+
+  async function onClickFinishSession(param){
+    console.log(param);    
+    const resp = await SendFinishSession(param);
+    console.log(resp);
+  }
+
+  async function onClickStartRoast(param){
+    if(!isDeviceActive) {
+      console.log("device is offline");
+      return;
+    }
+    await SendStartRoast();
+  }
+
+  async function onClickStopRoast(param){
+    if(!isDeviceActive) {
+      console.log("device is offline");
+      return;
+    }
+    await SendStopRoast();
+  }
 </script>
 
 <div class="container-fluid row text-center p-3 rounded-4 main-back min-vh-100">
@@ -120,7 +137,10 @@
         </div>
         <ControlPanel 
           bind:showSession="{showSession}"
-          onClickStartSetup="{onClickStartSetup}"
+          onClickCreateSession="{onClickCreateSession}"
+          onClickFinishSession="{onClickFinishSession}"
+          onClickStartRoast="{onClickStartRoast}"
+          onClickStopRoast="{onClickStopRoast}"
           isDeviceActive="{isDeviceActive}"
           roast="{roast}"
           roastSession="{roastSession}"

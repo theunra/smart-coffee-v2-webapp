@@ -63,6 +63,10 @@ export const SendStartRoast = async () => {
     return await Send("start-roast");
 }
 
+export const SendStopRoast = async () => {
+    return await Send("stop-roast");
+}
+
 export const SendCreateSession = async (param) => {
     return await Send("create-session", param);
 }

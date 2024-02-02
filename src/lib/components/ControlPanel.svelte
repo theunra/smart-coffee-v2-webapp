@@ -1,85 +1,105 @@
 <script>
-    import OtherInfoCard from '$lib/components/OtherInfoCard.svelte';
+  import OtherInfoCard from '$lib/components/OtherInfoCard.svelte';
 
-    export let onClickStartSetup = (param)=>{};
-    export const showSession = (isShow)=>{__intoSession(isShow);}
-    export let isDeviceActive = false;
-    export let isSession = false;
+  export let onClickCreateSession = (param)=>{};
+  export let onClickFinishSession = (param)=>{};
+  export let onClickStartRoast = (param)=>{};
+  export let onClickStopRoast = (param)=>{};
+  export const showSession = (isShow)=>{__intoSession(isShow);}
+  export let isDeviceActive = false;
+  export let isSession = false;
+  
+  export let roast = {
+    beanType : '-',
+    startTime : '-',
+    level : '-',
+  };
+
+  let beanType = '-';
+  let roastLevel = '-';
+
+  export let roastSession = {
+
+  };
+
+  //ntar pindah
+  const roastBeanTypeList = ["arabica", "robusta"];
+  const roastLevelList = ["light", "medium", "dark"];
+
+  $: if(roast){
+    if(roast.beanType != '-') beanType = roastBeanTypeList[roast.beanType];
+    if(roast.level != '-') roastLevel = roastLevelList[roast.level];
+  }
+
+  let __timeElapsed = "-";
+  let __timeKeeper;
+
+  function doubleToTimeString(num){
+    const min = parseInt(num / 60);
+    const sec = parseInt(((num / 60) - min) * 60);
+
+    return `${min} min ${sec} sec`;
+  }
+
     
-      export let roast = {
-          beanType : '-',
-          startTime : '-',
-          level : '-',
-        };
+  function __getSelection(id) {
+    const doc = document.getElementById(id)
+    const sel = doc.options[doc.selectedIndex].value;
+    return sel;
+  }
 
-      let beanType = '-';
-      let roastLevel = '-';
+  function __onClickCreateSession() {
+    let param = {};
+    
+    param.beanType = __getSelection("bean-type");
+    param.roastLevel = __getSelection("roast-level");
 
-      export let roastSession = {
+    onClickCreateSession(param);
+  };
 
-        };
+  function __onClickFinishSession() {
+    onClickFinishSession();
+  };
 
-      //ntar findah
-      const roastBeanTypeList = ["arabica", "robusta"];
-      const roastLevelList = ["light", "medium", "dark"];
+  function __onClickStartRoast(){
+    onClickStartRoast();
+  };
 
-      $: if(roast){
-          if(roast.beanType != '-') beanType = roastBeanTypeList[roast.beanType];
-          if(roast.level != '-') roastLevel = roastLevelList[roast.level];
-         }
+  function __onClickStopRoast(){
+    onClickStopRoast();
+  };
 
-      let __timeElapsed = "-";
-      let __timeKeeper;
+  function __intoSession(isShow) {
+    const infocard = document.getElementById("info-card");
+    const setupcard = document.getElementById("setup-card");
+    infocard.hidden = !isShow;
+    setupcard.hidden = isShow;
 
-      function doubleToTimeString(num){
-          const min = parseInt(num / 60);
-          const sec = parseInt(((num / 60) - min) * 60);
-
-          return `${min} min ${sec} sec`;
+    if(__timeKeeper) clearInterval(__timeKeeper);
+    
+    if(isShow){
+      isSession = true;
+      __timeKeeper = setInterval(()=>{
+        if(roast && roast.startTime){
+          const startTime = roast.startTime;
+          __timeElapsed = new Date().getTime() - new Date(startTime).getTime();
+          __timeElapsed /= (1000);
+          __timeElapsed = doubleToTimeString(__timeElapsed);
         }
-
-      
-    function __getSelection(id) {
-        const doc = document.getElementById(id)
-        const sel = doc.options[doc.selectedIndex].value;
-        return sel;
+      }, 1000);
     }
-    const __onClickStartSetup = ()=>{
-        let param = {};
-        
-        param.beanType = __getSelection("bean-type");
-        param.roastLevel = __getSelection("roast-level");
-
-        onClickStartSetup(param);
-    };
-
-    const __intoSession = (isShow)=>{
-        const infocard = document.getElementById("info-card");
-        const setupcard = document.getElementById("setup-card");
-        infocard.hidden = !isShow;
-        setupcard.hidden = isShow;
-
-        if(__timeKeeper) clearInterval(__timeKeeper);
-        
-        if(isShow){
-          __timeKeeper = setInterval(()=>{
-              if(roast && roast.startTime){
-                const startTime = roast.startTime;
-                __timeElapsed = new Date().getTime() - new Date(startTime).getTime();
-                __timeElapsed /= (1000);
-                __timeElapsed = doubleToTimeString(__timeElapsed);
-              }
-            }, 1000);
-          }
-
+    else {
+      isSession = false;
     }
-    
-    const __hide = ()=>{
-        const infocard = document.getElementById("info-card");
-        const setupcard = document.getElementById("setup-card");
-        infocard.hidden = true;
-        setupcard.hidden = true;
-    }
+
+  }
+  
+  function __hide() {
+      const infocard = document.getElementById("info-card");
+      const setupcard = document.getElementById("setup-card");
+      infocard.hidden = true;
+      setupcard.hidden = true;
+  }
 </script>
 
 <div id="setup-card" class="col-4">
@@ -107,7 +127,7 @@
         </div> 
         <div class="row">
           <div class="col"></div>
-          <div class="col fs-5 fw-bold mt-4 card-button" on:click={__onClickStartSetup}>START</div>
+          <div class="col fs-5 fw-bold mt-4 card-button" on:click={__onClickCreateSession}>CREATE</div>
           <div class="col"></div>
         </div>
       </div>
@@ -130,6 +150,21 @@
         <div class="row">
           <div class="col">Time Elapsed</div>
           <div class="col">{__timeElapsed}</div>
+        </div>
+        <div class="row">
+          <div class="col"></div>
+          <div class="col fs-5 fw-bold mt-4 card-button" on:click={__onClickStartRoast}>START</div>
+          <div class="col"></div>
+        </div>
+        <div class="row">
+          <div class="col"></div>
+          <div class="col fs-5 fw-bold mt-4 card-button" on:click={__onClickStopRoast}>STOP</div>
+          <div class="col"></div>
+        </div>
+        <div class="row">
+          <div class="col"></div>
+          <div class="col fs-5 fw-bold mt-4 card-button" on:click={__onClickFinishSession}>FINISH</div>
+          <div class="col"></div>
         </div>
       </div>
     </div>        
