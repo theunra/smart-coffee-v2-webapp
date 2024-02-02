@@ -281,4 +281,4 @@ export const RoastSession = sequelize.define("roast_sessions", {
   }
 })
 
-sequelize.sync({alter: true});
+//sequelize.sync({alter: true});

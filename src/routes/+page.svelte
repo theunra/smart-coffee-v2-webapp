@@ -62,9 +62,9 @@
   const CheckSession = async () => {
     const res = await GetRoastSession();
     console.log(res);
-    roastSession = res.payload.roastSession;
-    roast = res.payload.roast;
     if(res.status == 200){
+      roastSession = res.payload.roastSession;
+      roast = res.payload.roast;
       showSession(true);
     }
   }
@@ -73,12 +73,20 @@
     console.log(param);    
     const resp = await SendCreateSession(param);
     console.log(resp);
+   if(resp && resp.status == 200){
+      roastSession = resp.payload.roastSession;
+      roast = resp.payload.roast;
+      showSession(true);
+    }
   }
 
   async function onClickFinishSession(param){
     console.log(param);    
     const resp = await SendFinishSession(param);
     console.log(resp);
+    if(resp && resp.status == 200){
+      showSession(false);
+    }
   }
 
   async function onClickStartRoast(param){

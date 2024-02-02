@@ -82,6 +82,7 @@
       __timeKeeper = setInterval(()=>{
         if(roast && roast.startTime){
           const startTime = roast.startTime;
+          console.log("Time keeper : ", startTime);  
           __timeElapsed = new Date().getTime() - new Date(startTime).getTime();
           __timeElapsed /= (1000);
           __timeElapsed = doubleToTimeString(__timeElapsed);
