@@ -191,6 +191,10 @@ export function processEnoseGraphData(datas){
   const adc_mq136 = datas.payload.enose_raw_datas.map((d) => d.adc_mq136);
   const adc_mq137 = datas.payload.enose_raw_datas.map((d) => d.adc_mq137);
   const adc_mq138 = datas.payload.enose_raw_datas.map((d) => d.adc_mq138);
+  const adc_mq2 = datas.payload.enose_raw_datas.map((d) => d.adc_mq2);
+  const adc_mq3 = datas.payload.enose_raw_datas.map((d) => d.adc_mq3);
+  const adc_tgs822 = datas.payload.enose_raw_datas.map((d) => d.adc_tgs822);
+  const adc_tgs2620 = datas.payload.enose_raw_datas.map((d) => d.adc_tgs2620);
   
   const roastStatus = datas.payload.enose_raw_datas.map((d) => d.roastStatus);
   const currentRoastStatus = roastStatus[roastStatus.length - 1];
@@ -214,6 +218,20 @@ export function processEnoseGraphData(datas){
     }
   }
   
+  for(let k = roastLampIdx.light; k < roastStatus.length; k++){
+    if(roastStatus[k] == RoastStatus.MEDIUM) {//first light found
+      roastLampIdx.medium = k;
+      break;
+    }
+  }
+    
+  for(let k = roastLampIdx.medium; k < roastStatus.length; k++){
+    if(roastStatus[k] == RoastStatus.DARK) {//first light found
+      roastLampIdx.dark = k;
+      break;
+    }
+  }
+ 
   //let ts = datas.payload.enose_rawData.map((d) => d.time.split("T")[1]);
 
   //labels = ts;
@@ -226,6 +244,10 @@ export function processEnoseGraphData(datas){
       adc_mq136 : adc_mq136,
       adc_mq137 : adc_mq137,
       adc_mq138 : adc_mq138,
+      adc_mq2 : adc_mq2,
+      adc_mq3 : adc_mq3,
+      adc_tgs822 : adc_tgs822,
+      adc_tgs2620 : adc_tgs2620,
     },
     ppmData :{
 

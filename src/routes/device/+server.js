@@ -14,7 +14,6 @@ const deviceGetTimeout = 5000; //ms
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ url }) {
   //isDeviceConnected = true;
-  isDeviceActive = true;
 
   const key = url.searchParams.get('key');
   const res = {
@@ -106,7 +105,6 @@ async function CheckClientActive(){
 
 export async function POST({ request }) {	
   //isDeviceConnected = true;
-  isDeviceActive = true;
 
   const req = await request.json(); 
   const response = {

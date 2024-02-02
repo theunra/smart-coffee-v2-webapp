@@ -48,8 +48,8 @@
 
     const CreateSensorGraphs = () => {
         chargeLineMarker = new LineMarker().CreateLineMarker("chargeLineMarker", "green");
-        lightLineMarker = new LineMarker().CreateLineMarker("preheatLineMarker", "greenyellow");
-        mediumLineMarker = new LineMarker().CreateLineMarker("chargeLineMarker", "orange");
+        lightLineMarker = new LineMarker().CreateLineMarker("preheatLineMarker", "#FFC107");
+        mediumLineMarker = new LineMarker().CreateLineMarker("chargeLineMarker", "#A27A20");
         darkLineMarker = new LineMarker().CreateLineMarker("chargeLineMarker", "saddlebrown");
 
         function createChartOptions(labels, datasets) {

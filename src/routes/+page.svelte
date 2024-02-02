@@ -60,6 +60,12 @@
     const data = processEnoseGraphData(datas);
     rawEnoseGraphData.sensorData.adc_mq135 = data.rawData.adc_mq135;
     rawEnoseGraphData.sensorData.adc_mq136 = data.rawData.adc_mq136;
+    rawEnoseGraphData.sensorData.adc_mq137 = data.rawData.adc_mq137;
+    rawEnoseGraphData.sensorData.adc_mq138 = data.rawData.adc_mq138;
+    rawEnoseGraphData.sensorData.adc_mq2   = data.rawData.adc_mq2;
+    rawEnoseGraphData.sensorData.adc_mq3   = data.rawData.adc_mq3;
+    rawEnoseGraphData.sensorData.adc_tgs822  = data.rawData.adc_tgs822;
+    rawEnoseGraphData.sensorData.adc_tgs2620 = data.rawData.adc_tgs2620;
     rawEnoseGraphData.dataTracker = data.dataTracker;
     rawEnoseGraphData.roastLampIdx = data.roastLampIdx;
     currentRoastStatus = data.currentRoastStatus;
