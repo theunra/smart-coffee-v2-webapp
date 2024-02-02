@@ -1,11 +1,14 @@
 const url_device_api = "/device";
+export const deviceAbortController = new AbortController();
 
 const Get = async (key="", param={}) => {
+    const signal = deviceAbortController.signal;
     const response = await fetch(`${url_device_api}?` + new URLSearchParams({
             ...param,
             key : key,
         }), {
         method: 'GET',
+        signal: signal,
     });
     
     const resp_data = await response.json();

@@ -1,12 +1,12 @@
 <script>
   import {onMount} from 'svelte';
-  import {GetIsDeviceActive, GetRoastSession, SendStartRoast, SendStopRoast, SendCreateSession, SendFinishSession} from '$lib/api/device.js';
-  import {GetData} from '$lib/api/data.js';
+  import {GetIsDeviceActive, GetRoastSession, SendStartRoast, SendStopRoast, SendCreateSession, SendFinishSession, deviceAbortController} from '$lib/api/device.js';
+  import {GetData, GetDataAbort} from '$lib/api/data.js';
   import RoastStatusLamp from '$lib/components/RoastStatusLamp.svelte';
   import ControlPanel from '$lib/components/ControlPanel.svelte';
   import MonitoringGraph from '$lib/components/MonitoringGraph.svelte';
   import {EnoseGraphData, processEnoseGraphData, EnoseRawData} from '$lib/digest/enose-data.js';
-  
+
   let showSession;
 
   let roastSession;
@@ -28,18 +28,35 @@
   rawEnoseGraphData.labels = new EnoseRawData().getLabels();
   
   onMount(async () => {
+    CheckSession();
     PollEnoseData();
     PollIsDeviceActive();
-    CheckSession();
   });
 
   const PollEnoseData = async () => {
-    let datas = await GetData(rawEnoseGraphData.dataTracker);
+    const roastId = roastSession != null ? roastSession.roastId : -1; 
+      if(roastId == -1 || roastId == null){
+          console.log("no roastId, wait for session");
+          await new Promise(r => setTimeout(r, 1000));
+          PollEnoseData();
+          return;
+        }
+    let datas = await GetData({
+        tracker : rawEnoseGraphData.dataTracker,
+        roastId : roastId,
+    });
+
+    console.log(datas, roastId);
     if(!datas){
         PollEnoseData();
         return;
     }
-    
+
+    if(datas.status == 504){
+        PollEnoseData();
+        return;
+    }//PERLU FORMAT RESPONSE YANG JELAS JING, NTARAN
+     
     const data = processEnoseGraphData(datas);
     rawEnoseGraphData.sensorData.adc_mq135 = data.rawData.adc_mq135;
     rawEnoseGraphData.sensorData.adc_mq136 = data.rawData.adc_mq136;
@@ -56,7 +73,9 @@
       isDeviceActive = res.payload.isDeviceActive;
       console.log("device active : " ,isDeviceActive);
     }
-    setTimeout(()=> {PollIsDeviceActive();}, 2000);
+      //setTimeout(()=> {PollIsDeviceActive();}, 2000);
+      await new Promise(r => setTimeout(r, 2000));
+      PollIsDeviceActive();
   }
 
   const CheckSession = async () => {
@@ -85,7 +104,9 @@
     const resp = await SendFinishSession(param);
     console.log(resp);
     if(resp && resp.status == 200){
+      roastSession = resp.payload.roastSession;
       showSession(false);
+      GetDataAbort.abort(); //cancel get data poll
     }
   }
 
@@ -158,14 +179,13 @@
   </div>
 </div>
 
-
-<!-- <button on:click={()=>{
-        currentRoastStatus = currentRoastStatus + 1;
-        if(currentRoastStatus > 4) currentRoastStatus = 0;
+<!--
+<button on:click={()=>{
+        GetDataAbort.abort();
         }}>
         p
-</button> -->
-
+</button>
+-->
 <style>
   /*
   canvas {

@@ -12,6 +12,7 @@ let tracker = 0;
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ url }) {	
   const clientTracker = url.searchParams.get('tracker');
+  const roastId = url.searchParams.get('roastId');
   const getRawData = url.searchParams.get('get_raw_data');
   const getPpmData = url.searchParams.get('get_ppm_data');
 
@@ -31,11 +32,19 @@ export async function GET({ url }) {
 
     onFinish : async () => {
         const enoseRawDatas = await EnoseRawData.findAll({
+          where : {
+            roastId : roastId,
+          },
           order : [["time", "desc"]],
         });
-        const enosePpmDatas = await EnosePPMData.findAll();
+        const enosePpmDatas = await EnosePPMData.findAll({
+           where : {
+            roastId : roastId,
+          },
+        });
         
         enoseRawDatas.reverse();
+        enosePpmDatas.reverse();
 
         response = {
           payload: {

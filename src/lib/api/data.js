@@ -1,11 +1,13 @@
 const url_data_api = '/data';
 
-export const GetData = async (dataTracker, get_raw_data) => {
-    const response = await fetch(`${url_data_api}?` + new URLSearchParams({
-        tracker : dataTracker, 
-        get_raw_data : get_raw_data,
-      }), {
+export let GetDataAbort;
+export const GetData = async (param) => {
+    GetDataAbort = new AbortController();
+    const signal = GetDataAbort.signal;
+    try{
+    const response = await fetch(`${url_data_api}?` + new URLSearchParams(param), {
           method : 'GET',
+          signal : signal,
     });
     
     const status = response.status;
@@ -16,5 +18,11 @@ export const GetData = async (dataTracker, get_raw_data) => {
     } else {
         const datas = await response.json();
         return datas;
+    }
+
+    }
+    catch(err){
+      console.log(err);
+      return false;
     }
 }
