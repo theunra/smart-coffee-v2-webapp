@@ -6,14 +6,16 @@ const deviceId = "77f04f7b-0ec0-4ce7-b8e7-ff629e90d8c3";
 const deviceRoastSessionId = 1; //current device session
 let deviceEvent = [];
 let isDeviceActive = false;
-let isDeviceConnected = false;
+//let isDeviceConnected = false;
 let isDeviceHasEvent = false;
 
 const deviceGetTimeout = 5000; //ms
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ url }) {
-  isDeviceConnected = true;
+  //isDeviceConnected = true;
+  isDeviceActive = true;
+
   const key = url.searchParams.get('key');
   const res = {
     status: 200, 
@@ -58,7 +60,7 @@ export async function GET({ url }) {
   else if (key == "event") {
     await LongPolling({
       doCheck : async ()=>{
-        isDeviceConnected = true;
+        isDeviceActive = true;
         if(isDeviceHasEvent) return true;
         else return false;
       },
@@ -81,7 +83,7 @@ export async function GET({ url }) {
   }
   else return new Response(400);
 
-  isDeviceConnected = false;
+  //isDeviceConnected = false;
 
   return new Response(JSON.stringify(res));
 }
@@ -89,21 +91,22 @@ export async function GET({ url }) {
 async function CheckClientActive(){
   await new Promise(r => setTimeout(r, 5000));
 
-  if(!isDeviceConnected) {
+  //if(!isDeviceConnected) {
     if(isDeviceActive){
       isDeviceActive = false;
     }
     else {
       return; //stop routine
     }
-  } else isDeviceActive = true;
+  //} else isDeviceActive = true;
 
   CheckClientActive();
 }
 
 
 export async function POST({ request }) {	
-  isDeviceConnected = true;
+  //isDeviceConnected = true;
+  isDeviceActive = true;
 
   const req = await request.json(); 
   const response = {
@@ -189,7 +192,7 @@ export async function POST({ request }) {
   }
   else return new Response(400);
 
-  isDeviceConnected = false;
+  //isDeviceConnected = false;
 
   return new Response(JSON.stringify(response));
 }
