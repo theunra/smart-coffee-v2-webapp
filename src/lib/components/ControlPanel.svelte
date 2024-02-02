@@ -96,10 +96,10 @@
   }
   
   function __hide() {
-      const infocard = document.getElementById("info-card");
-      const setupcard = document.getElementById("setup-card");
-      infocard.hidden = true;
-      setupcard.hidden = true;
+    const infocard = document.getElementById("info-card");
+    const setupcard = document.getElementById("setup-card");
+    infocard.hidden = true;
+    setupcard.hidden = true;
   }
 </script>
 

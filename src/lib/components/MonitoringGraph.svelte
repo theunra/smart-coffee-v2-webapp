@@ -12,15 +12,14 @@
     let mediumLineMarker;
     let darkLineMarker;
 
-    // export let enoseGraphData = new EnoseGraphData();
     export let enoseGraphData;
-    // export let roastLampIdx;
-    // export let graphDataType;
     export let graphId;
 
     $: if (chart) {
         const chargeIdx = enoseGraphData.roastLampIdx.charge;
         const lightIdx = enoseGraphData.roastLampIdx.light;
+        const mediumIdx = enoseGraphData.roastLampIdx.medium;
+        const darkIdx = enoseGraphData.roastLampIdx.dark;
         
         let graphDatas = enoseGraphData.sensorData.serialize(); 
         // if(graphDataType == 'raw') graphDatas = rawData.serialize();
@@ -34,18 +33,24 @@
         
         chart.data.labels = labels;
         
-        lightLineMarker.linePos = lightIdx;
         chargeLineMarker.linePos = chargeIdx;
+        lightLineMarker.linePos = lightIdx;
+        mediumLineMarker.linePos = mediumIdx;
+        darkLineMarker.linePos = darkIdx;
 
-        chart.config.plugins[0] = lightLineMarker;
-        chart.config.plugins[1] = chargeLineMarker;
+        chart.config.plugins[0] = chargeLineMarker;
+        chart.config.plugins[1] = lightLineMarker;
+        chart.config.plugins[2] = mediumLineMarker;
+        chart.config.plugins[3] = darkLineMarker;
         
         chart.update();
     }
 
     const CreateSensorGraphs = () => {
-        lightLineMarker = new LineMarker().CreateLineMarker("preheatLineMarker", "blue");
         chargeLineMarker = new LineMarker().CreateLineMarker("chargeLineMarker", "green");
+        lightLineMarker = new LineMarker().CreateLineMarker("preheatLineMarker", "greenyellow");
+        mediumLineMarker = new LineMarker().CreateLineMarker("chargeLineMarker", "orange");
+        darkLineMarker = new LineMarker().CreateLineMarker("chargeLineMarker", "saddlebrown");
 
         function createChartOptions(labels, datasets) {
             return {
@@ -57,6 +62,8 @@
                 plugins: [
                     lightLineMarker, 
                     chargeLineMarker,
+                    mediumLineMarker,
+                    darkLineMarker,
                 ],
                 options:{
                 responsive: true,
