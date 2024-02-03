@@ -133,16 +133,6 @@
   }
 </script>
 
-<div class="container-fluid row text-center p-3 rounded-4 main-back min-vh-100">
-  <div class="col-1 ">
-    <div class="row">
-      <!--<img class="img-fluid logo-img rounded-start" src="/smartcoffeelogo.png"/>-->
-      <div class="col">logo</div>
-    </div>
-    <div class="row">
-      <div class="col fs-6 rounded-start mt-1 pt-2 pb-2 main-container">Dashboard</div>
-    </div>
-  </div>
   <div class="col main-container p-3 ps-5 rounded-4">
     <div class="row mt-4 align-items-start" style="height: 10vh">
       <div class="col text-start">
@@ -183,7 +173,6 @@
       </div>
     </div>
   </div>
-</div>
 
 <!--
 <button on:click={()=>{
