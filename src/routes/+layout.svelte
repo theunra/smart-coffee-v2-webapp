@@ -29,3 +29,31 @@
 
 <footer>
 </footer>
+
+<style>
+  .main-back {
+    #background: rgb(255,185,216) !important;
+    background: radial-gradient(circle, rgba(255,185,216,0.7852914847579657) 0%, rgba(196,234,255,0.5612018489036239) 100%);
+  }
+
+  .main-container {
+    background-color: rgba(255, 255, 255, 0.6);
+  }
+
+  .content-container {
+    background-color: rgba(255, 255, 255, 0.6);
+    box-shadow: 2px 10px 10px rgb(203 203 203);
+  }
+
+  .graph-container {
+    height : 200;
+    width : 100%;
+  }
+  
+  .logo-img{
+    #margin-right: 2px;
+    #border: 5px solid white;
+    #border-radius: 10%;
+    #background-color: white;
+  }
+</style>
