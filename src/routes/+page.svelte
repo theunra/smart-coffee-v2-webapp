@@ -154,9 +154,9 @@
             <div class="row">
               <MonitoringGraph graphId="raw-chart" enoseGraphData="{rawEnoseGraphData}"/>
             </div>          
-            <div class="row">
+            <!--<div class="row">
               <MonitoringGraph graphId="ppm-chart" enoseGraphData="{rawEnoseGraphData}"/>
-            </div> 
+            </div> -->
             <RoastStatusLamp currentRoastStatus="{currentRoastStatus}"/>
           </div>
         </div>

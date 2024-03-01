@@ -117,7 +117,7 @@
         }}>{expand_text}</button>
 <style>
   .p{
-    height : 30vh;
+    height : 50vh;
     width : 100%;
   }
 </style>
